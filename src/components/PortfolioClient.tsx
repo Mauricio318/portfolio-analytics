@@ -393,7 +393,16 @@ export default function PortfolioClient({
                 )}
               </div>
               <div className={styles.certInfo}>
-                <h4 className={styles.certTitle}>{translateDbString(cert.title, lang)}</h4>
+                <h4 className={styles.certTitle}>
+                  {cert.link ? (
+                    <a href={cert.link} target="_blank" rel="noopener noreferrer">
+                      {translateDbString(cert.title, lang)}
+                      <ExternalLink size={14} style={{ marginLeft: '0.25rem', opacity: 0.8 }} />
+                    </a>
+                  ) : (
+                    translateDbString(cert.title, lang)
+                  )}
+                </h4>
                 <div className={styles.certIssuer}>{translateDbString(cert.institution, lang)}</div>
                 <p className={styles.certDesc}>{translateDbString(cert.description, lang)}</p>
               </div>
@@ -420,7 +429,16 @@ export default function PortfolioClient({
                   )}
                 </div>
                 <div className={styles.certInfo}>
-                  <h4 className={styles.certTitle}>{translateDbString(course.title, lang)}</h4>
+                  <h4 className={styles.certTitle}>
+                    {course.link ? (
+                      <a href={course.link} target="_blank" rel="noopener noreferrer">
+                        {translateDbString(course.title, lang)}
+                        <ExternalLink size={14} style={{ marginLeft: '0.25rem', opacity: 0.8 }} />
+                      </a>
+                    ) : (
+                      translateDbString(course.title, lang)
+                    )}
+                  </h4>
                   <div className={styles.certIssuer}>{translateDbString(course.institution, lang)}</div>
                   {course.start_date && (
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>

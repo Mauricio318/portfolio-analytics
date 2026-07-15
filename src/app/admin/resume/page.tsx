@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 export default function ResumeAdmin() {
   const [items, setItems] = useState<any[]>([]);
-  const [form, setForm] = useState({ type: 'job', title: '', institution: '', start_date: '', end_date: '', description: '', technologies: '', image_url: '' });
+  const [form, setForm] = useState({ type: 'job', title: '', institution: '', start_date: '', end_date: '', description: '', technologies: '', image_url: '', link: '' });
   const [uploading, setUploading] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -169,7 +169,8 @@ export default function ResumeAdmin() {
       end_date: '', 
       description: '', 
       technologies: '', 
-      image_url: '' 
+      image_url: '',
+      link: ''
     }));
     loadItems();
   };
@@ -184,7 +185,8 @@ export default function ResumeAdmin() {
       end_date: item.end_date || '',
       description: item.description || '',
       technologies: item.technologies || '',
-      image_url: item.image_url || ''
+      image_url: item.image_url || '',
+      link: item.link || ''
     });
   };
 
@@ -198,7 +200,8 @@ export default function ResumeAdmin() {
       end_date: '',
       description: '',
       technologies: '',
-      image_url: ''
+      image_url: '',
+      link: ''
     }));
   };
 
@@ -328,6 +331,7 @@ export default function ResumeAdmin() {
         <textarea placeholder="Descrição das responsabilidades ou conquistas." value={form.description} onChange={e => setForm({...form, description: e.target.value})} required style={{padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', minHeight: '80px'}} />
         <div style={{display:'flex', gap:'1rem', alignItems: 'center'}}>
           <input placeholder="Ferramentas (Ex: Python, Airflow) - Separadas por vírgula" value={form.technologies} onChange={e => setForm({...form, technologies: e.target.value})} style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
+          <input placeholder="Link / Credencial (URL de verificação)" value={form.link} onChange={e => setForm({...form, link: e.target.value})} style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
           
           {/* Only certifications and informal courses can have uploaded images */}
           {['certification', 'course'].includes(form.type) && (
@@ -368,6 +372,7 @@ export default function ResumeAdmin() {
                   <h4 style={{ color: '#334155', margin: '0 0 0.5rem 0', fontWeight: 'normal' }}>{item.institution} ({item.start_date} - {item.end_date || 'Atual'})</h4>
                   <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '0' }}>{item.description}</p>
                   {item.technologies && <div style={{ color: '#0ea5e9', fontSize: '0.8rem', fontWeight: 'bold', marginTop: '0.25rem' }}>🛠️ Ferramentas: {item.technologies}</div>}
+                  {item.link && <div style={{ color: '#0ea5e9', fontSize: '0.8rem', marginTop: '0.25rem' }}>🔗 Link: <a href={item.link} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>{item.link}</a></div>}
                   {item.image_url && <div style={{ color: '#475569', fontSize: '0.8rem', marginTop: '0.25rem' }}>🖼️ Imagem: <code>{item.image_url}</code></div>}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

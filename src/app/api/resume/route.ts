@@ -23,10 +23,10 @@ export async function POST(request: Request) {
   if (!await checkAuth()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
   
   try {
-    const { type, title, institution, start_date, end_date, description, technologies, image_url } = await request.json();
+    const { type, title, institution, start_date, end_date, description, technologies, image_url, link } = await request.json();
     const db = getDb();
-    const stmt = db.prepare('INSERT INTO resume_items (type, title, institution, start_date, end_date, description, technologies, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
-    const info = stmt.run(type, title, institution, start_date, end_date, description, technologies, image_url);
+    const stmt = db.prepare('INSERT INTO resume_items (type, title, institution, start_date, end_date, description, technologies, image_url, link) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    const info = stmt.run(type, title, institution, start_date, end_date, description, technologies, image_url, link);
     
     return NextResponse.json({ id: info.lastInsertRowid, success: true });
   } catch (error) {
@@ -52,10 +52,10 @@ export async function PUT(request: Request) {
   if (!await checkAuth()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
   
   try {
-    const { id, type, title, institution, start_date, end_date, description, technologies, image_url } = await request.json();
+    const { id, type, title, institution, start_date, end_date, description, technologies, image_url, link } = await request.json();
     const db = getDb();
-    const stmt = db.prepare('UPDATE resume_items SET type = ?, title = ?, institution = ?, start_date = ?, end_date = ?, description = ?, technologies = ?, image_url = ? WHERE id = ?');
-    stmt.run(type, title, institution, start_date, end_date, description, technologies, image_url, id);
+    const stmt = db.prepare('UPDATE resume_items SET type = ?, title = ?, institution = ?, start_date = ?, end_date = ?, description = ?, technologies = ?, image_url = ?, link = ? WHERE id = ?');
+    stmt.run(type, title, institution, start_date, end_date, description, technologies, image_url, link, id);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Erro ao salvar' }, { status: 500 });
