@@ -17,7 +17,7 @@ export const translations = {
     // Sections
     sectionProjectsTitle: 'Meus Projetos',
     sectionTrajectoryTitle: 'Trajetória Profissional',
-    sectionSkillsTitle: 'Visão Técnica',
+    sectionSkillsTitle: 'Habilidades Técnicas',
     sectionContactTitle: 'Contato',
     
     // Experience / Courses subtitles
@@ -148,7 +148,7 @@ export const translations = {
     // Sections
     sectionProjectsTitle: 'My Projects',
     sectionTrajectoryTitle: 'Professional Trajectory',
-    sectionSkillsTitle: 'Technical Vision',
+    sectionSkillsTitle: 'Technical Skills',
     sectionContactTitle: 'Contact',
     
     // Experience / Courses subtitles
