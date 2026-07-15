@@ -11,10 +11,12 @@ async function queryKV(command: string[]) {
   if (!url || !token) {
     const redisUrl = process.env.KV_REDIS_URL;
     if (redisUrl) {
-      const match = redisUrl.match(/rediss:\/\/([^:]+):([^@]+)@([^:]+):(\d+)/);
-      if (match) {
-        token = match[2]; // senha = token
-        url = `https://${match[3]}`; // host = rest url
+      try {
+        const u = new URL(redisUrl);
+        token = u.password; // senha = token
+        url = `https://${u.hostname}`; // host = rest url
+      } catch (e) {
+        console.error('Erro ao processar KV_REDIS_URL:', e);
       }
     }
   }

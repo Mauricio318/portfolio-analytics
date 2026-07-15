@@ -31,9 +31,11 @@ export async function GET() {
     let parsedHost = 'Nenhum';
     const redisUrl = process.env.KV_REDIS_URL;
     if (redisUrl) {
-      const match = redisUrl.match(/rediss:\/\/([^:]+):([^@]+)@([^:]+):(\d+)/);
-      if (match) {
-        parsedHost = match[3];
+      try {
+        const u = new URL(redisUrl);
+        parsedHost = u.hostname;
+      } catch (e) {
+        parsedHost = 'Erro: ' + (e as Error).message;
       }
     }
 
