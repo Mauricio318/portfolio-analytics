@@ -83,12 +83,12 @@ export default function PortfolioClient({
     const saved = localStorage.getItem('mb_visit_number');
     const savedNumber = saved ? parseInt(saved, 10) : NaN;
 
-    if (!isNaN(savedNumber)) {
-      // Valid number already stored — show it without hitting the API
+    if (!isNaN(savedNumber) && savedNumber > 0) {
+      // Valid positive number already stored — show it without hitting the API
       setVisitCount(savedNumber);
       setTimeout(() => setVisitAnimated(true), 300);
     } else {
-      // New visitor (or stuck 'pending') — clear and register
+      // New visitor (or stuck 'pending' / '0') — clear and register
       localStorage.setItem('mb_visit_number', 'pending');
       fetch('/api/visit', { method: 'POST' })
         .then(r => r.json())
