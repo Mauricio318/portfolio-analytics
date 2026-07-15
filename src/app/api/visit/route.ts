@@ -4,8 +4,8 @@ import { headers } from 'next/headers';
 
 // Helper para fazer requisições ao Vercel KV via REST API
 async function queryKV(command: string[]) {
-  const url = process.env.KV_REST_API_URL;
-  const token = process.env.KV_REST_API_TOKEN;
+  const url = process.env.KV_REST_API_URL || process.env.STORAGE_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.STORAGE_REST_API_TOKEN;
   if (!url || !token) return null;
 
   try {
@@ -29,8 +29,9 @@ async function queryKV(command: string[]) {
 
 // GET: retorna o total de visitas
 export async function GET() {
+  const hasKV = process.env.KV_REST_API_URL || process.env.STORAGE_REST_API_URL;
   // 1. Tenta buscar do Vercel KV (Produção)
-  if (process.env.KV_REST_API_URL) {
+  if (hasKV) {
     const kvCount = await queryKV(['GET', 'visit_count']);
     if (kvCount !== null) {
       return NextResponse.json({ count: parseInt(kvCount, 10) || 0 });
@@ -61,7 +62,8 @@ export async function POST() {
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
     // --- MODO PRODUÇÃO: Vercel KV ---
-    if (process.env.KV_REST_API_URL) {
+    const hasKV = process.env.KV_REST_API_URL || process.env.STORAGE_REST_API_URL;
+    if (hasKV) {
       const ipDayKey = `visit_ip:${ip}:${today}`;
       
       // Verifica se o IP já visitou hoje (chave expira em 24h)

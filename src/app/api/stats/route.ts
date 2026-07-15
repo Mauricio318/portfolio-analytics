@@ -9,9 +9,77 @@ async function checkAuth() {
   return await decrypt(session);
 }
 
+
+// Helper para fazer requisições ao Vercel KV via REST API
+async function queryKV(command: string[]) {
+  const url = process.env.KV_REST_API_URL || process.env.STORAGE_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.STORAGE_REST_API_TOKEN;
+  if (!url || !token) return null;
+
+  try {
+    const res = await fetch(`${url}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(command),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.result;
+    }
+  } catch (e) {
+    console.error('Erro ao acessar Vercel KV:', e);
+  }
+  return null;
+}
+
 export async function GET() {
   if (!await checkAuth()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
 
+  const hasKV = process.env.KV_REST_API_URL || process.env.STORAGE_REST_API_URL;
+
+  // --- MODO PRODUÇÃO: Ler estatísticas do Vercel KV ---
+  if (hasKV) {
+    try {
+      const totalVal = await queryKV(['GET', 'visit_count']);
+      const total = parseInt(totalVal || '0', 10);
+
+      // Busca a lista de últimas visitas (recent_visits_list)
+      const list = await queryKV(['LRANGE', 'recent_visits_list', '0', '99']) as string[] | null;
+      const recent = (list || []).map(item => JSON.parse(item));
+
+      // Agrega dados em tempo real no servidor para o dashboard
+      const countryMap: Record<string, number> = {};
+      const deviceMap: Record<string, number> = {};
+      const browserMap: Record<string, number> = {};
+
+      recent.forEach((v: any) => {
+        countryMap[v.country] = (countryMap[v.country] || 0) + 1;
+        deviceMap[v.device] = (deviceMap[v.device] || 0) + 1;
+        browserMap[v.browser] = (browserMap[v.browser] || 0) + 1;
+      });
+
+      const byCountry = Object.entries(countryMap)
+        .map(([country, count]) => ({ country, count }))
+        .sort((a, b) => b.count - a.count);
+
+      const byDevice = Object.entries(deviceMap)
+        .map(([device, count]) => ({ device, count }))
+        .sort((a, b) => b.count - a.count);
+
+      const byBrowser = Object.entries(browserMap)
+        .map(([browser, count]) => ({ browser, count }))
+        .sort((a, b) => b.count - a.count);
+
+      return NextResponse.json({ total, byCountry, byDevice, byBrowser, recent: recent.slice(0, 20) });
+    } catch (e) {
+      console.error('Erro ao agregar estatísticas do KV:', e);
+    }
+  }
+
+  // --- MODO LOCAL: SQLite ---
   try {
     const db = getDb(true);
 
