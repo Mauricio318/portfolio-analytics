@@ -11,7 +11,7 @@ async function checkAuth() {
 
 export async function GET() {
   try {
-    const db = getDb();
+    const db = getDb(true);
     const items = db.prepare('SELECT * FROM resume_items ORDER BY end_date DESC, id DESC').all();
     return NextResponse.json(items);
   } catch (error) {

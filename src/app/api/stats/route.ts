@@ -13,7 +13,7 @@ export async function GET() {
   if (!await checkAuth()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
 
   try {
-    const db = getDb();
+    const db = getDb(true);
 
     const totalRow = db.prepare("SELECT value FROM settings WHERE key = 'visit_count'").get() as { value: string } | undefined;
     const total = parseInt(totalRow?.value || '0', 10);

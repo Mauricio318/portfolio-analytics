@@ -4,7 +4,7 @@ import PortfolioClient from '@/components/PortfolioClient';
 export const dynamic = 'force-dynamic';
 
 export default function Home() {
-  const db = getDb();
+  const db = getDb(true);
   
   // Fetch Settings
   const settingsRows = db.prepare('SELECT key, value FROM settings').all() as { key: string, value: string }[];

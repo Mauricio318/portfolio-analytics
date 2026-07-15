@@ -11,7 +11,7 @@ async function checkAuth() {
 
 export async function GET() {
   try {
-    const db = getDb();
+    const db = getDb(true);
     const items = db.prepare('SELECT * FROM skills ORDER BY percentage DESC, id ASC').all();
     return NextResponse.json(items);
   } catch (error) {

@@ -11,7 +11,7 @@ async function checkAuth() {
 
 export async function GET() {
   try {
-    const db = getDb();
+    const db = getDb(true);
     const rows = db.prepare('SELECT key, value FROM settings').all() as { key: string, value: string }[];
     const settings = rows.reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {});
     return NextResponse.json(settings);

@@ -4,8 +4,10 @@ import path from 'path';
 // Helper to get the correct path in all environments
 const dbPath = path.resolve(process.cwd(), 'portfolio.db');
 
-export const getDb = () => {
-  const db = new Database(dbPath);
-  db.pragma('journal_mode = WAL');
+export const getDb = (readonly = false) => {
+  const db = new Database(dbPath, { readonly });
+  if (!readonly) {
+    db.pragma('journal_mode = WAL');
+  }
   return db;
 };

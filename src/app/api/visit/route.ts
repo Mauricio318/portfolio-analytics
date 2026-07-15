@@ -2,10 +2,9 @@ import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { headers } from 'next/headers';
 
-// GET: retorna o total de visitas (sem registrar)
 export async function GET() {
   try {
-    const db = getDb();
+    const db = getDb(true);
     const row = db.prepare("SELECT value FROM settings WHERE key = 'visit_count'").get() as { value: string } | undefined;
     const count = parseInt(row?.value || '0', 10);
     return NextResponse.json({ count });
