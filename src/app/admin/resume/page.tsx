@@ -233,25 +233,25 @@ export default function ResumeAdmin() {
 
   return (
     <div>
-      <h1 style={{ fontSize: '2rem', marginBottom: '1.5rem', color: '#111827' }}>Gerenciar Currículo (Trajetória Profissional)</h1>
+      <h1 style={{ fontSize: '2rem', marginBottom: '1.5rem', color: 'var(--text-main)' }}>Gerenciar Currículo (Trajetória Profissional)</h1>
       
       {/* CV PDF Upload Section */}
-      <div style={{ marginBottom: '2rem', padding: '1.5rem', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-        <h2 style={{ fontSize: '1.25rem', marginBottom: '0.75rem', color: '#111827', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <div style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px', boxShadow: 'var(--card-shadow)' }}>
+        <h2 style={{ fontSize: '1.25rem', marginBottom: '0.75rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           📄 Currículo em PDF (Download para Recrutadores)
         </h2>
-        <p style={{ fontSize: '0.85rem', color: '#4b5563', marginBottom: '1rem' }}>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
           Faça o upload do seu arquivo de currículo em formato PDF. Este arquivo ficará disponível para download dos recrutadores através do botão "Baixar CV" no site público.
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          <input type="file" accept=".pdf" onChange={handleCvUpload} style={{ fontSize: '0.9rem' }} />
-          {uploadingCv && <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Carregando PDF...</span>}
+          <input type="file" accept=".pdf" onChange={handleCvUpload} style={{ fontSize: '0.9rem', color: 'var(--text-main)' }} />
+          {uploadingCv && <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Carregando PDF...</span>}
           {cvUrl ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <span style={{ fontSize: '0.85rem', color: '#10b981', fontWeight: 'bold' }}>
-                ✓ Currículo ativo: <a href={cvUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline', color: '#0ea5e9' }}>{cvUrl.split('/').pop()}</a>
+                ✓ Currículo ativo: <a href={cvUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline', color: 'var(--accent)' }}>{cvUrl.split('/').pop()}</a>
               </span>
-              <button type="button" onClick={handleCvRemove} style={{ padding: '0.4rem 0.8rem', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}>
+              <button type="button" onClick={handleCvRemove} style={{ padding: '0.4rem 0.8rem', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}>
                 Remover PDF
               </button>
             </div>
@@ -264,42 +264,42 @@ export default function ResumeAdmin() {
       </div>
 
       {/* Profile Settings Section */}
-      <form onSubmit={handleProfileSubmit} style={{ marginBottom: '2rem', padding: '1.5rem', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <h2 style={{ fontSize: '1.25rem', marginBottom: '0.25rem', color: '#111827', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <form onSubmit={handleProfileSubmit} style={{ marginBottom: '2rem', padding: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px', boxShadow: 'var(--card-shadow)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <h2 style={{ fontSize: '1.25rem', marginBottom: '0.25rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           👤 Informações do Perfil (Nome, Cargo, Biografia)
         </h2>
-        <p style={{ fontSize: '0.85rem', color: '#4b5563', marginBottom: '0.5rem' }}>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
           Edite o seu nome, cargos listados e o texto da sua biografia exibidos na página inicial do portfólio.
         </p>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#374151' }}>Nome Completo:</label>
+            <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-muted)' }}>Nome Completo:</label>
             <input 
               type="text" 
               value={profile.name} 
               onChange={e => setProfile({ ...profile, name: e.target.value })} 
               required 
-              style={{ padding: '0.75rem', border: '1px solid #ddd', borderRadius: '4px' }} 
+              style={{ padding: '0.75rem', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-main)', background: 'var(--bg-main)' }} 
             />
           </div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#374151' }}>Cargos (Separados por vírgula):</label>
+            <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-muted)' }}>Cargos (Separados por vírgula):</label>
             <input 
               type="text" 
               value={profile.roles} 
               onChange={e => setProfile({ ...profile, roles: e.target.value })} 
               required 
-              style={{ padding: '0.75rem', border: '1px solid #ddd', borderRadius: '4px' }} 
+              style={{ padding: '0.75rem', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-main)', background: 'var(--bg-main)' }} 
             />
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-          <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#374151' }}>Biografia:</label>
+          <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-muted)' }}>Biografia:</label>
           <textarea 
             value={profile.bio} 
             onChange={e => setProfile({ ...profile, bio: e.target.value })} 
             required 
-            style={{ padding: '0.75rem', border: '1px solid #ddd', borderRadius: '4px', minHeight: '100px', lineHeight: '1.5' }} 
+            style={{ padding: '0.75rem', border: '1px solid var(--border)', borderRadius: '4px', minHeight: '100px', lineHeight: '1.5', color: 'var(--text-main)', background: 'var(--bg-main)' }} 
           />
         </div>
         <div>
