@@ -129,7 +129,7 @@ export default function PortfolioClient({
       {/* Dynamic Translated Navigation Header */}
       <header className={styles.navbar}>
         <div className={styles.navContainer}>
-          <div className={styles.logo}>MB. <span style={{ fontSize: '0.65rem', opacity: 0.6 }}>v1</span></div>
+          <a href="#inicio" className={styles.logo}>MB. <span style={{ fontSize: '0.65rem', opacity: 0.6 }}>v1</span></a>
           <div className={styles.navLinks}>
             <a href="#inicio">{t.navHome}</a>
             <a href="#portfolio">{t.navPortfolio}</a>
