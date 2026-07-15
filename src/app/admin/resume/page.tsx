@@ -333,17 +333,25 @@ export default function ResumeAdmin() {
           <input placeholder="Ferramentas (Ex: Python, Airflow) - Separadas por vírgula" value={form.technologies} onChange={e => setForm({...form, technologies: e.target.value})} style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
           <input placeholder="Link / Credencial (URL de verificação)" value={form.link} onChange={e => setForm({...form, link: e.target.value})} style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
           
-          {/* Only certifications and informal courses can have uploaded images */}
+          {/* Only certifications and informal courses can have images */}
           {['certification', 'course'].includes(form.type) && (
-            <div style={{flex:1, display:'flex', flexDirection:'column', gap:'0.25rem'}}>
-              <label style={{fontSize:'0.75rem', fontWeight:'bold', color:'#374151'}}>Upload de Imagem/Selo (Opcional):</label>
-              <input type="file" accept="image/*" onChange={handleImageUpload} style={{fontSize:'0.8rem'}} />
-              {form.image_url && (
-                <div style={{display:'flex', alignItems:'center', gap:'0.5rem', marginTop:'0.25rem'}}>
-                  <span style={{fontSize:'0.7rem', color:'#10b981', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'120px'}}>Enviado: {form.image_url}</span>
-                  <button type="button" onClick={() => setForm(prev => ({ ...prev, image_url: '' }))} style={{fontSize:'0.7rem', padding:'0.1rem 0.3rem', background:'#ef4444', color:'#fff', border:'none', borderRadius:'3px', cursor:'pointer'}}>Remover</button>
-                </div>
-              )}
+            <div style={{flex:2, display:'flex', gap:'1rem', flexWrap:'wrap', width:'100%'}}>
+              <div style={{flex:2, display:'flex', flexDirection:'column', gap:'0.25rem'}}>
+                <label style={{fontSize:'0.75rem', fontWeight:'bold', color:'#374151'}}>URL da Imagem / Selo:</label>
+                <input 
+                  placeholder="Cole uma URL da web (Microsoft, Credly) ou use o upload ao lado" 
+                  value={form.image_url} 
+                  onChange={e => setForm({...form, image_url: e.target.value})} 
+                  style={{padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', fontSize:'0.85rem'}} 
+                />
+              </div>
+              <div style={{flex:1, display:'flex', flexDirection:'column', gap:'0.25rem'}}>
+                <label style={{fontSize:'0.75rem', fontWeight:'bold', color:'#374151'}}>Ou Upload de Arquivo:</label>
+                <input type="file" accept="image/*" onChange={handleImageUpload} style={{fontSize:'0.8rem', padding:'0.5rem 0'}} />
+                {form.image_url && form.image_url.startsWith('/') && (
+                  <span style={{fontSize:'0.7rem', color:'#10b981'}}>✓ Arquivo local enviado</span>
+                )}
+              </div>
             </div>
           )}
         </div>
