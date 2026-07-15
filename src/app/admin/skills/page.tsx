@@ -95,17 +95,17 @@ export default function SkillsAdmin() {
 
   return (
     <div>
-      <h1 style={{ fontSize: '2rem', marginBottom: '1rem', color: '#111827' }}>Gerenciar Habilidades (Ferramentas Técnicas)</h1>
-      <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem', padding: '1.5rem', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+      <h1 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'var(--text-main)' }}>Gerenciar Habilidades (Ferramentas Técnicas)</h1>
+      <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem', padding: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px', boxShadow: 'var(--card-shadow)' }}>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <input placeholder="Nome (Ex: Python)" value={name} onChange={e => setName(e.target.value)} required style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
-          <input placeholder="Nível (Ex: Avançado)" value={level} onChange={e => setLevel(e.target.value)} required style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
-          <input type="number" placeholder="%" value={percentage} onChange={e => setPercentage(e.target.value)} required style={{width:'80px', padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
+          <input placeholder="Nome (Ex: Python)" value={name} onChange={e => setName(e.target.value)} required style={{flex:2, padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
+          <input placeholder="Nível (Ex: Avançado)" value={level} onChange={e => setLevel(e.target.value)} required style={{flex:2, padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
+          <input type="number" placeholder="%" value={percentage} onChange={e => setPercentage(e.target.value)} required style={{width:'80px', padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            <label style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#374151' }}>Upload de Logo da Ferramenta (Opcional):</label>
-            <input type="file" accept="image/*" onChange={handleImageUpload} style={{ fontSize: '0.8rem' }} />
+            <label style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-muted)' }}>Upload de Logo da Ferramenta (Opcional):</label>
+            <input type="file" accept="image/*" onChange={handleImageUpload} style={{ fontSize: '0.8rem', color: 'var(--text-main)' }} />
             {imageUrl && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
                 <span style={{ fontSize: '0.7rem', color: '#10b981', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '200px' }}>Enviado: {imageUrl}</span>
@@ -115,11 +115,11 @@ export default function SkillsAdmin() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <button type="submit" style={{ padding: '0.75rem 1.5rem', background: '#0ea5e9', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+          <button type="submit" style={{ padding: '0.75rem 1.5rem', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}>
             {editingId ? 'Salvar Alterações' : 'Adicionar Habilidade'}
           </button>
           {editingId && (
-            <button type="button" onClick={handleCancelEdit} style={{ padding: '0.75rem 1.5rem', background: '#9ca3af', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+            <button type="button" onClick={handleCancelEdit} style={{ padding: '0.75rem 1.5rem', background: 'var(--text-muted)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}>
               Cancelar Edição
             </button>
           )}
@@ -127,17 +127,17 @@ export default function SkillsAdmin() {
       </form>
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {items.map(item => (
-          <li key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.5rem', background: '#fff', marginBottom: '0.5rem', borderRadius: '8px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+          <li key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)', marginBottom: '0.5rem', borderRadius: '8px', boxShadow: 'var(--card-shadow)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               {item.image_url && (
                 <img src={item.image_url} alt={item.name} style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
               )}
-              <div style={{ color: '#334155' }}>
-                <strong style={{ color: '#0f172a' }}>{item.name}</strong> - {item.level} ({item.percentage}%)
+              <div style={{ color: 'var(--text-muted)' }}>
+                <strong style={{ color: 'var(--text-main)' }}>{item.name}</strong> - {item.level} ({item.percentage}%)
               </div>
             </div>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button onClick={() => handleEditClick(item)} style={{ color: '#0ea5e9', border: 'none', background: 'none', cursor: 'pointer', fontWeight: 'bold' }}>Editar</button>
+              <button onClick={() => handleEditClick(item)} style={{ color: 'var(--accent)', border: 'none', background: 'none', cursor: 'pointer', fontWeight: 'bold' }}>Editar</button>
               <button onClick={() => handleDelete(item.id)} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer', fontWeight: 'bold' }}>Excluir</button>
             </div>
           </li>

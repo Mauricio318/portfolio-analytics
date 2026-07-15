@@ -310,44 +310,44 @@ export default function ResumeAdmin() {
       </form>
 
       {/* Trajectory Items Admin Form */}
-      <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem', padding: '1.5rem', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-        <h2 style={{ fontSize: '1.25rem', marginBottom: '0.25rem', color: '#111827', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem', padding: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px', boxShadow: 'var(--card-shadow)' }}>
+        <h2 style={{ fontSize: '1.25rem', marginBottom: '0.25rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           🏫 Adicionar ou Editar Etapa da Trajetória
         </h2>
-        <div style={{display:'flex', gap:'1rem'}}>
-          <select value={form.type} onChange={e => setForm({...form, type: e.target.value, image_url: ''})} style={{padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', background: '#ffffff', color: '#0f172a'}}>
-            <option value="job" style={{color: '#0f172a', background: '#ffffff'}}>Experiência Profissional</option>
-            <option value="academic" style={{color: '#0f172a', background: '#ffffff'}}>Formação Acadêmica</option>
-            <option value="certification" style={{color: '#0f172a', background: '#ffffff'}}>Certificação Oficial</option>
-            <option value="course" style={{color: '#0f172a', background: '#ffffff'}}>Curso Complementar</option>
+        <div style={{display:'flex', gap:'1rem', flexWrap: 'wrap'}}>
+          <select value={form.type} onChange={e => setForm({...form, type: e.target.value, image_url: ''})} style={{padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', background: 'var(--bg-main)', color: 'var(--text-main)'}}>
+            <option value="job" style={{color: 'var(--text-main)', background: 'var(--bg-secondary)'}}>Experiência Profissional</option>
+            <option value="academic" style={{color: 'var(--text-main)', background: 'var(--bg-secondary)'}}>Formação Acadêmica</option>
+            <option value="certification" style={{color: 'var(--text-main)', background: 'var(--bg-secondary)'}}>Certificação Oficial</option>
+            <option value="course" style={{color: 'var(--text-main)', background: 'var(--bg-secondary)'}}>Curso Complementar</option>
           </select>
-          <input placeholder="Cargo / Título" value={form.title} onChange={e => setForm({...form, title: e.target.value})} required style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', color: '#0f172a', background: '#ffffff'}} />
-          <input placeholder="Empresa / Instituição" value={form.institution} onChange={e => setForm({...form, institution: e.target.value})} required style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', color: '#0f172a', background: '#ffffff'}} />
+          <input placeholder="Cargo / Título" value={form.title} onChange={e => setForm({...form, title: e.target.value})} required style={{flex:2, padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
+          <input placeholder="Empresa / Instituição" value={form.institution} onChange={e => setForm({...form, institution: e.target.value})} required style={{flex:2, padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
         </div>
         <div style={{display:'flex', gap:'1rem'}}>
-          <input placeholder="Data Início (ex: 02/2018)" value={form.start_date} onChange={e => setForm({...form, start_date: e.target.value})} required style={{flex:1, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', color: '#0f172a', background: '#ffffff'}} />
-          <input placeholder="Data Fim (ex: Atual)" value={form.end_date} onChange={e => setForm({...form, end_date: e.target.value})} style={{flex:1, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', color: '#0f172a', background: '#ffffff'}} />
+          <input placeholder="Data Início (ex: 02/2018)" value={form.start_date} onChange={e => setForm({...form, start_date: e.target.value})} required style={{flex:1, padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
+          <input placeholder="Data Fim (ex: Atual)" value={form.end_date} onChange={e => setForm({...form, end_date: e.target.value})} style={{flex:1, padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
         </div>
-        <textarea placeholder="Descrição das responsabilidades ou conquistas." value={form.description} onChange={e => setForm({...form, description: e.target.value})} required style={{padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', minHeight: '80px', color: '#0f172a', background: '#ffffff'}} />
-        <div style={{display:'flex', gap:'1rem', alignItems: 'center'}}>
-          <input placeholder="Ferramentas (Ex: Python, Airflow) - Separadas por vírgula" value={form.technologies} onChange={e => setForm({...form, technologies: e.target.value})} style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', color: '#0f172a', background: '#ffffff'}} />
-          <input placeholder="Link / Credencial (URL de verificação)" value={form.link} onChange={e => setForm({...form, link: e.target.value})} style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', color: '#0f172a', background: '#ffffff'}} />
+        <textarea placeholder="Descrição das responsabilidades ou conquistas." value={form.description} onChange={e => setForm({...form, description: e.target.value})} required style={{padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', minHeight: '80px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
+        <div style={{display:'flex', gap:'1rem', alignItems: 'center', flexWrap: 'wrap'}}>
+          <input placeholder="Ferramentas (Ex: Python, Airflow) - Separadas por vírgula" value={form.technologies} onChange={e => setForm({...form, technologies: e.target.value})} style={{flex:2, padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
+          <input placeholder="Link / Credencial (URL de verificação)" value={form.link} onChange={e => setForm({...form, link: e.target.value})} style={{flex:2, padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
           
           {/* Only certifications and informal courses can have images */}
           {['certification', 'course'].includes(form.type) && (
             <div style={{flex:2, display:'flex', gap:'1rem', flexWrap:'wrap', width:'100%'}}>
               <div style={{flex:2, display:'flex', flexDirection:'column', gap:'0.25rem'}}>
-                <label style={{fontSize:'0.75rem', fontWeight:'bold', color:'#374151'}}>URL da Imagem / Selo:</label>
+                <label style={{fontSize:'0.75rem', fontWeight:'bold', color:'var(--text-muted)'}}>URL da Imagem / Selo:</label>
                 <input 
                   placeholder="Cole uma URL da web (Microsoft, Credly) ou use o upload ao lado" 
                   value={form.image_url} 
                   onChange={e => setForm({...form, image_url: e.target.value})} 
-                  style={{padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', fontSize:'0.85rem', color: '#0f172a', background: '#ffffff'}} 
+                  style={{padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', fontSize:'0.85rem', color: 'var(--text-main)', background: 'var(--bg-main)'}} 
                 />
               </div>
               <div style={{flex:1, display:'flex', flexDirection:'column', gap:'0.25rem'}}>
-                <label style={{fontSize:'0.75rem', fontWeight:'bold', color:'#374151'}}>Ou Upload de Arquivo:</label>
-                <input type="file" accept="image/*" onChange={handleImageUpload} style={{fontSize:'0.8rem', padding:'0.5rem 0'}} />
+                <label style={{fontSize:'0.75rem', fontWeight:'bold', color:'var(--text-muted)'}}>Ou Upload de Arquivo:</label>
+                <input type="file" accept="image/*" onChange={handleImageUpload} style={{fontSize:'0.8rem', padding:'0.5rem 0', color: 'var(--text-main)'}} />
                 {form.image_url && form.image_url.startsWith('/') && (
                   <span style={{fontSize:'0.7rem', color:'#10b981'}}>✓ Arquivo local enviado</span>
                 )}
@@ -356,11 +356,11 @@ export default function ResumeAdmin() {
           )}
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <button type="submit" style={{ padding: '0.75rem 1.5rem', background: '#0ea5e9', color: '#fff', border: 'none', borderRadius: '4px', cursor:'pointer' }}>
+          <button type="submit" style={{ padding: '0.75rem 1.5rem', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: '4px', cursor:'pointer', fontWeight: 600 }}>
             {editingId ? 'Salvar Alterações' : 'Adicionar Item'}
           </button>
           {editingId && (
-            <button type="button" onClick={handleCancelEdit} style={{ padding: '0.75rem 1.5rem', background: '#9ca3af', color: '#fff', border: 'none', borderRadius: '4px', cursor:'pointer' }}>
+            <button type="button" onClick={handleCancelEdit} style={{ padding: '0.75rem 1.5rem', background: 'var(--text-muted)', color: '#fff', border: 'none', borderRadius: '4px', cursor:'pointer', fontWeight: 600 }}>
               Cancelar Edição
             </button>
           )}
@@ -371,20 +371,20 @@ export default function ResumeAdmin() {
         {items.map(item => {
           const colors = getTypeColor(item.type);
           return (
-            <li key={item.id} style={{ padding: '1.5rem', background: '#fff', marginBottom: '1rem', borderRadius: '8px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+            <li key={item.id} style={{ padding: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)', marginBottom: '1rem', borderRadius: '8px', boxShadow: 'var(--card-shadow)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
-                  <h3 style={{ color: '#0f172a', margin: '0 0 0.25rem 0' }}>
+                  <h3 style={{ color: 'var(--text-main)', margin: '0 0 0.25rem 0' }}>
                     {item.title} <span style={{ fontSize:'0.75rem', padding:'0.2rem 0.5rem', background: colors.bg, color: colors.text, borderRadius:'12px', marginLeft: '0.5rem'}}>{getTypeName(item.type)}</span>
                   </h3>
-                  <h4 style={{ color: '#334155', margin: '0 0 0.5rem 0', fontWeight: 'normal' }}>{item.institution} ({item.start_date} - {item.end_date || 'Atual'})</h4>
-                  <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '0' }}>{item.description}</p>
-                  {item.technologies && <div style={{ color: '#0ea5e9', fontSize: '0.8rem', fontWeight: 'bold', marginTop: '0.25rem' }}>🛠️ Ferramentas: {item.technologies}</div>}
-                  {item.link && <div style={{ color: '#0ea5e9', fontSize: '0.8rem', marginTop: '0.25rem' }}>🔗 Link: <a href={item.link} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>{item.link}</a></div>}
-                  {item.image_url && <div style={{ color: '#475569', fontSize: '0.8rem', marginTop: '0.25rem' }}>🖼️ Imagem: <code>{item.image_url}</code></div>}
+                  <h4 style={{ color: 'var(--text-muted)', margin: '0 0 0.5rem 0', fontWeight: 'normal' }}>{item.institution} ({item.start_date} - {item.end_date || 'Atual'})</h4>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0' }}>{item.description}</p>
+                  {item.technologies && <div style={{ color: 'var(--accent)', fontSize: '0.8rem', fontWeight: 'bold', marginTop: '0.25rem' }}>🛠️ Ferramentas: {item.technologies}</div>}
+                  {item.link && <div style={{ color: 'var(--accent)', fontSize: '0.8rem', marginTop: '0.25rem' }}>🔗 Link: <a href={item.link} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>{item.link}</a></div>}
+                  {item.image_url && <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.25rem' }}>🖼️ Imagem: <code>{item.image_url}</code></div>}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <button onClick={() => handleEditClick(item)} style={{ color: '#0ea5e9', border: 'none', background: 'none', cursor: 'pointer', fontWeight:'bold', padding:'0.5rem' }}>Editar</button>
+                  <button onClick={() => handleEditClick(item)} style={{ color: 'var(--accent)', border: 'none', background: 'none', cursor: 'pointer', fontWeight:'bold', padding:'0.5rem' }}>Editar</button>
                   <button onClick={() => handleDelete(item.id)} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer', fontWeight:'bold', padding:'0.5rem' }}>Excluir</button>
                 </div>
               </div>
