@@ -6,9 +6,11 @@ export async function POST(request: Request) {
   try {
     const { password } = await request.json();
     
-    // Hardcoded simple password for the portfolio admin
-    // Ideally from process.env.ADMIN_PASSWORD
-    const adminPassword = process.env.ADMIN_PASSWORD || 'bimbu2026';
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    
+    if (!adminPassword) {
+      return NextResponse.json({ error: 'Configuração administrativa ausente no servidor' }, { status: 500 });
+    }
     
     if (password === adminPassword) {
       const sessionData = { role: 'admin' };
