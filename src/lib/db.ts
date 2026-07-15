@@ -19,8 +19,6 @@ export const getDb = (readonly = false) => {
     }
   }
 
-  console.log(`[Database] path resolved to: ${dbPath} (exists: ${fs.existsSync(dbPath)})`);
-
   const db = new Database(dbPath, { readonly });
   if (!readonly && !process.env.VERCEL) {
     db.pragma('journal_mode = WAL');
