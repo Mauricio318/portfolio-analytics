@@ -4,8 +4,21 @@ import { headers } from 'next/headers';
 
 // Helper para fazer requisições ao Vercel KV via REST API
 async function queryKV(command: string[]) {
-  const url = process.env.KV_REST_API_URL || process.env.STORAGE_REST_API_URL;
-  const token = process.env.KV_REST_API_TOKEN || process.env.STORAGE_REST_API_TOKEN;
+  let url = process.env.KV_REST_API_URL || process.env.STORAGE_REST_API_URL;
+  let token = process.env.KV_REST_API_TOKEN || process.env.STORAGE_REST_API_TOKEN;
+
+  // Fallback: extrai credenciais HTTP a partir da conexão TCP da Vercel (KV_REDIS_URL)
+  if (!url || !token) {
+    const redisUrl = process.env.KV_REDIS_URL;
+    if (redisUrl) {
+      const match = redisUrl.match(/rediss:\/\/([^:]+):([^@]+)@([^:]+):(\d+)/);
+      if (match) {
+        token = match[2]; // senha = token
+        url = `https://${match[3]}`; // host = rest url
+      }
+    }
+  }
+
   if (!url || !token) return null;
 
   try {
@@ -29,7 +42,7 @@ async function queryKV(command: string[]) {
 
 // GET: retorna o total de visitas
 export async function GET() {
-  const hasKV = process.env.KV_REST_API_URL || process.env.STORAGE_REST_API_URL;
+  const hasKV = process.env.KV_REST_API_URL || process.env.STORAGE_REST_API_URL || process.env.KV_REDIS_URL;
   // 1. Tenta buscar do Vercel KV (Produção)
   if (hasKV) {
     const kvCount = await queryKV(['GET', 'visit_count']);
@@ -62,7 +75,7 @@ export async function POST() {
     const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
     // --- MODO PRODUÇÃO: Vercel KV ---
-    const hasKV = process.env.KV_REST_API_URL || process.env.STORAGE_REST_API_URL;
+    const hasKV = process.env.KV_REST_API_URL || process.env.STORAGE_REST_API_URL || process.env.KV_REDIS_URL;
     if (hasKV) {
       const ipDayKey = `visit_ip:${ip}:${today}`;
       
