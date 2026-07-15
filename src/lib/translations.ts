@@ -5,7 +5,7 @@ export const translations = {
     // Nav / Header
     navHome: 'Início',
     navPortfolio: 'Projetos',
-    navExperience: 'Trajetória',
+    navExperience: 'Experiência',
     navSkills: 'Habilidades',
     navContact: 'Contato',
     
@@ -15,8 +15,8 @@ export const translations = {
     heroButtonContact: 'Contato',
     
     // Sections
-    sectionProjectsTitle: 'Meus Projetos',
-    sectionTrajectoryTitle: 'Trajetória Profissional',
+    sectionProjectsTitle: 'Cases & Projetos',
+    sectionTrajectoryTitle: 'Experiência Profissional',
     sectionSkillsTitle: 'Habilidades Técnicas',
     sectionContactTitle: 'Contato',
     
@@ -136,7 +136,7 @@ export const translations = {
     // Nav / Header
     navHome: 'Home',
     navPortfolio: 'Projects',
-    navExperience: 'Trajectory',
+    navExperience: 'Experience',
     navSkills: 'Skills',
     navContact: 'Contact',
     
@@ -146,8 +146,8 @@ export const translations = {
     heroButtonContact: 'Contact',
     
     // Sections
-    sectionProjectsTitle: 'My Projects',
-    sectionTrajectoryTitle: 'Professional Trajectory',
+    sectionProjectsTitle: 'Cases & Projects',
+    sectionTrajectoryTitle: 'Professional Experience',
     sectionSkillsTitle: 'Technical Skills',
     sectionContactTitle: 'Contact',
     
