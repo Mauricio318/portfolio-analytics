@@ -68,7 +68,7 @@ export default function StatsAdmin() {
           <h3 style={{ marginBottom: '1rem', color: '#111827', fontSize: '1rem' }}>🌍 Visitas por País</h3>
           {stats.byCountry.length === 0
             ? <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Nenhuma visita registrada ainda.</p>
-            : stats.byCountry.slice(0, 8).map(r => barRow(r.country, r.count, stats.total, '#6366f1'))
+            : stats.byCountry.slice(0, 8).map(r => barRow(r.country, r.count, stats.total, '#0ea5e9'))
           }
         </div>
         <div style={{ background: '#fff', borderRadius: '10px', padding: '1.5rem', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
@@ -97,13 +97,15 @@ export default function StatsAdmin() {
               ) : stats.recent.map((v, i) => (
                 <tr key={v.id} style={{ borderBottom: '1px solid #f8fafc', background: i % 2 === 0 ? '#fafafa' : '#fff' }}>
                   <td style={{ padding: '0.5rem 0.75rem', color: '#94a3b8' }}>{v.id}</td>
-                  <td style={{ padding: '0.5rem 0.75rem' }}>{v.country}</td>
+                  <td style={{ padding: '0.5rem 0.75rem' }}>
+                    <span style={{ fontSize: '0.75rem', padding: '0.15rem 0.5rem', borderRadius: '999px', background: '#e0f2fe', color: '#0369a1', fontWeight: 500 }}>{v.country}</span>
+                  </td>
                   <td style={{ padding: '0.5rem 0.75rem', color: '#64748b' }}>{v.city}</td>
                   <td style={{ padding: '0.5rem 0.75rem' }}>
-                    <span style={{ fontSize: '0.75rem', padding: '0.15rem 0.5rem', borderRadius: '999px', background: '#e0f2fe', color: '#0369a1' }}>{v.device}</span>
+                    <span style={{ fontSize: '0.75rem', padding: '0.15rem 0.5rem', borderRadius: '999px', background: '#dcfce7', color: '#15803d', fontWeight: 500 }}>{v.device}</span>
                   </td>
                   <td style={{ padding: '0.5rem 0.75rem' }}>
-                    <span style={{ fontSize: '0.75rem', padding: '0.15rem 0.5rem', borderRadius: '999px', background: '#fef3c7', color: '#92400e' }}>{v.browser}</span>
+                    <span style={{ fontSize: '0.75rem', padding: '0.15rem 0.5rem', borderRadius: '999px', background: '#fef3c7', color: '#92400e', fontWeight: 500 }}>{v.browser}</span>
                   </td>
                   <td style={{ padding: '0.5rem 0.75rem', color: '#64748b', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v.referrer}</td>
                   <td style={{ padding: '0.5rem 0.75rem', color: '#94a3b8', whiteSpace: 'nowrap' }}>
