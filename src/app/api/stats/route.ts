@@ -17,10 +17,15 @@ function getRedis() {
   const redisUrl = process.env.KV_REDIS_URL;
   if (!redisUrl) return null;
   try {
-    redisClient = new Redis(redisUrl, {
+    const options: any = {
       maxRetriesPerRequest: 1,
       connectTimeout: 5000,
-    });
+    };
+    // Habilita suporte a TLS flexível para conexões em nuvem (Redis Labs / Upstash)
+    if (redisUrl.startsWith('rediss://')) {
+      options.tls = { rejectUnauthorized: false };
+    }
+    redisClient = new Redis(redisUrl, options);
     return redisClient;
   } catch (e) {
     console.error('Erro ao conectar no Redis:', e);
