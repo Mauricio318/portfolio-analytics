@@ -1,0 +1,19 @@
+node_modules
+# env files
+.env.local
+.env*.local
+
+# Next.js build output
+.next/
+tsconfig.tsbuildinfo
+
+# OS files
+.DS_Store
+**/.DS_Store
+
+# Editor configurations
+.vscode/
+
+# Temporary/Old backups
+old_version/
+*.log

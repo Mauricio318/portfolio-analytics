@@ -1,0 +1,126 @@
+.terminal {
+  width: 100%;
+  max-width: 900px;
+  margin: 3rem auto;
+  background: #050811;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+[data-theme='light'] .terminal {
+  border-color: #cbd5e1;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
+}
+
+.header {
+  background: #0f172a;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #1e293b;
+  position: relative;
+}
+
+[data-theme='light'] .header {
+  background: #f1f5f9;
+  border-bottom-color: #cbd5e1;
+}
+
+.buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.close { background: #ef4444; }
+.minimize { background: #eab308; }
+.maximize { background: #22c55e; }
+
+.title {
+  color: #64748b;
+  font-size: 0.8rem;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: 600;
+}
+
+.body {
+  padding: 1.5rem;
+  height: 350px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  color: #a7f3d0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+[data-theme='light'] .body {
+  background: #fafafa;
+  color: #0f172a;
+}
+
+.promptRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.promptSymbol {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.input {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  flex-grow: 1;
+  outline: none;
+}
+
+.output {
+  white-space: pre-wrap;
+  color: #34d399;
+}
+
+[data-theme='light'] .output {
+  color: #047857;
+}
+
+.cmdText {
+  color: #e2e8f0;
+}
+
+[data-theme='light'] .cmdText {
+  color: #1e293b;
+}
+
+.table {
+  width: 100%;
+  max-width: 500px;
+  margin: 0.5rem 0;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  text-align: left;
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='light'] .table td {
+  border-bottom-color: rgba(0, 0, 0, 0.05);
+}
