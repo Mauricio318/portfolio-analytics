@@ -28,6 +28,15 @@ export async function GET() {
       key.includes('TOKEN')
     );
 
+    let parsedHost = 'Nenhum';
+    const redisUrl = process.env.KV_REDIS_URL;
+    if (redisUrl) {
+      const match = redisUrl.match(/rediss:\/\/([^:]+):([^@]+)@([^:]+):(\d+)/);
+      if (match) {
+        parsedHost = match[3];
+      }
+    }
+
     const envVarsChecked = {
       KV_REST_API_URL: !!process.env.KV_REST_API_URL,
       KV_REST_API_TOKEN: !!process.env.KV_REST_API_TOKEN,
@@ -37,7 +46,8 @@ export async function GET() {
       STORAGE_TOKEN: !!process.env.STORAGE_TOKEN,
       KV_URL: !!process.env.KV_URL,
       ADMIN_PASSWORD: !!process.env.ADMIN_PASSWORD,
-      foundEnvKeys
+      foundEnvKeys,
+      parsedHost
     };
 
     return NextResponse.json({
