@@ -4,8 +4,9 @@ import { headers } from 'next/headers';
 
 // GET: retorna o total de visitas
 export async function GET() {
+  const isProd = process.env.VERCEL_URL || process.env.VERCEL || process.env.NODE_ENV === 'production';
   // 1. Em Produção (Vercel): Busca do CounterAPI
-  if (process.env.VERCEL) {
+  if (isProd) {
     try {
       const res = await fetch('https://api.counterapi.dev/v1/mauriciobimbu/visits', {
         next: { revalidate: 0 }
@@ -34,8 +35,9 @@ export async function GET() {
 // POST: registra uma nova visita e incrementa o contador
 export async function POST() {
   try {
+    const isProd = process.env.VERCEL_URL || process.env.VERCEL || process.env.NODE_ENV === 'production';
     // 1. Em Produção (Vercel): Incrementa usando a CounterAPI
-    if (process.env.VERCEL) {
+    if (isProd) {
       try {
         const res = await fetch('https://api.counterapi.dev/v1/mauriciobimbu/visits/up', {
           method: 'GET',
