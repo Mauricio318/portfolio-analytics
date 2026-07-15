@@ -21,7 +21,7 @@ export const getDb = (readonly = false) => {
 
   const db = new Database(dbPath, { readonly });
   if (!readonly && !process.env.VERCEL) {
-    db.pragma('journal_mode = WAL');
+    db.pragma('journal_mode = delete');
   }
   return db;
 };

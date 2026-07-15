@@ -315,23 +315,23 @@ export default function ResumeAdmin() {
           🏫 Adicionar ou Editar Etapa da Trajetória
         </h2>
         <div style={{display:'flex', gap:'1rem'}}>
-          <select value={form.type} onChange={e => setForm({...form, type: e.target.value, image_url: ''})} style={{padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', background: '#fff'}}>
-            <option value="job">Experiência Profissional</option>
-            <option value="academic">Formação Acadêmica</option>
-            <option value="certification">Certificação Oficial</option>
-            <option value="course">Curso Complementar</option>
+          <select value={form.type} onChange={e => setForm({...form, type: e.target.value, image_url: ''})} style={{padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', background: '#ffffff', color: '#0f172a'}}>
+            <option value="job" style={{color: '#0f172a', background: '#ffffff'}}>Experiência Profissional</option>
+            <option value="academic" style={{color: '#0f172a', background: '#ffffff'}}>Formação Acadêmica</option>
+            <option value="certification" style={{color: '#0f172a', background: '#ffffff'}}>Certificação Oficial</option>
+            <option value="course" style={{color: '#0f172a', background: '#ffffff'}}>Curso Complementar</option>
           </select>
-          <input placeholder="Cargo / Título" value={form.title} onChange={e => setForm({...form, title: e.target.value})} required style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
-          <input placeholder="Empresa / Instituição" value={form.institution} onChange={e => setForm({...form, institution: e.target.value})} required style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
+          <input placeholder="Cargo / Título" value={form.title} onChange={e => setForm({...form, title: e.target.value})} required style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', color: '#0f172a', background: '#ffffff'}} />
+          <input placeholder="Empresa / Instituição" value={form.institution} onChange={e => setForm({...form, institution: e.target.value})} required style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', color: '#0f172a', background: '#ffffff'}} />
         </div>
         <div style={{display:'flex', gap:'1rem'}}>
-          <input placeholder="Data Início (ex: 02/2018)" value={form.start_date} onChange={e => setForm({...form, start_date: e.target.value})} required style={{flex:1, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
-          <input placeholder="Data Fim (ex: Atual)" value={form.end_date} onChange={e => setForm({...form, end_date: e.target.value})} style={{flex:1, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
+          <input placeholder="Data Início (ex: 02/2018)" value={form.start_date} onChange={e => setForm({...form, start_date: e.target.value})} required style={{flex:1, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', color: '#0f172a', background: '#ffffff'}} />
+          <input placeholder="Data Fim (ex: Atual)" value={form.end_date} onChange={e => setForm({...form, end_date: e.target.value})} style={{flex:1, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', color: '#0f172a', background: '#ffffff'}} />
         </div>
-        <textarea placeholder="Descrição das responsabilidades ou conquistas." value={form.description} onChange={e => setForm({...form, description: e.target.value})} required style={{padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', minHeight: '80px'}} />
+        <textarea placeholder="Descrição das responsabilidades ou conquistas." value={form.description} onChange={e => setForm({...form, description: e.target.value})} required style={{padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', minHeight: '80px', color: '#0f172a', background: '#ffffff'}} />
         <div style={{display:'flex', gap:'1rem', alignItems: 'center'}}>
-          <input placeholder="Ferramentas (Ex: Python, Airflow) - Separadas por vírgula" value={form.technologies} onChange={e => setForm({...form, technologies: e.target.value})} style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
-          <input placeholder="Link / Credencial (URL de verificação)" value={form.link} onChange={e => setForm({...form, link: e.target.value})} style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
+          <input placeholder="Ferramentas (Ex: Python, Airflow) - Separadas por vírgula" value={form.technologies} onChange={e => setForm({...form, technologies: e.target.value})} style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', color: '#0f172a', background: '#ffffff'}} />
+          <input placeholder="Link / Credencial (URL de verificação)" value={form.link} onChange={e => setForm({...form, link: e.target.value})} style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', color: '#0f172a', background: '#ffffff'}} />
           
           {/* Only certifications and informal courses can have images */}
           {['certification', 'course'].includes(form.type) && (
@@ -342,7 +342,7 @@ export default function ResumeAdmin() {
                   placeholder="Cole uma URL da web (Microsoft, Credly) ou use o upload ao lado" 
                   value={form.image_url} 
                   onChange={e => setForm({...form, image_url: e.target.value})} 
-                  style={{padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', fontSize:'0.85rem'}} 
+                  style={{padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', fontSize:'0.85rem', color: '#0f172a', background: '#ffffff'}} 
                 />
               </div>
               <div style={{flex:1, display:'flex', flexDirection:'column', gap:'0.25rem'}}>
