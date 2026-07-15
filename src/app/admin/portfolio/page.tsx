@@ -84,19 +84,19 @@ export default function PortfolioAdmin() {
 
   return (
     <div>
-      <h1 style={{ fontSize: '2rem', marginBottom: '1rem', color: '#111827' }}>Gerenciar Projetos (Portfólio)</h1>
-      <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem', padding: '1.5rem', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-        <div style={{display:'flex', gap:'1rem'}}>
-          <input placeholder="Título do Projeto" value={form.title} onChange={e => setForm({...form, title: e.target.value})} required style={{flex:2, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
-          <input placeholder="Categoria (Ex: Data Science)" value={form.category} onChange={e => setForm({...form, category: e.target.value})} required style={{flex:1, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
+      <h1 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'var(--text-main)' }}>Gerenciar Projetos (Portfólio)</h1>
+      <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem', padding: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px', boxShadow: 'var(--card-shadow)' }}>
+        <div style={{display:'flex', gap:'1rem', flexWrap: 'wrap'}}>
+          <input placeholder="Título do Projeto" value={form.title} onChange={e => setForm({...form, title: e.target.value})} required style={{flex:2, padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
+          <input placeholder="Categoria (Ex: Data Science)" value={form.category} onChange={e => setForm({...form, category: e.target.value})} required style={{flex:1, padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
         </div>
-        <textarea placeholder="Descrição curta do projeto e os impactos." value={form.description} onChange={e => setForm({...form, description: e.target.value})} required style={{padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px', minHeight: '80px'}} />
-        <div style={{display:'flex', gap:'1rem', alignItems: 'center'}}>
-          <input placeholder="Tags (Ex: Python, Power BI, SQL)" value={form.tags} onChange={e => setForm({...form, tags: e.target.value})} style={{flex:1, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
-          <input placeholder="Link Externo / GitHub (Opcional)" value={form.link} onChange={e => setForm({...form, link: e.target.value})} style={{flex:1, padding:'0.75rem', border:'1px solid #ddd', borderRadius:'4px'}} />
+        <textarea placeholder="Descrição curta do projeto e os impactos." value={form.description} onChange={e => setForm({...form, description: e.target.value})} required style={{padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', minHeight: '80px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
+        <div style={{display:'flex', gap:'1rem', alignItems: 'center', flexWrap: 'wrap'}}>
+          <input placeholder="Tags (Ex: Python, Power BI, SQL)" value={form.tags} onChange={e => setForm({...form, tags: e.target.value})} style={{flex:1, padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
+          <input placeholder="Link Externo / GitHub (Opcional)" value={form.link} onChange={e => setForm({...form, link: e.target.value})} style={{flex:1, padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
           <div style={{flex:1, display:'flex', flexDirection:'column', gap:'0.25rem'}}>
-            <label style={{fontSize:'0.75rem', fontWeight:'bold', color:'#374151'}}>Upload de Imagem:</label>
-            <input type="file" accept="image/*" onChange={handleImageUpload} style={{fontSize:'0.8rem'}} />
+            <label style={{fontSize:'0.75rem', fontWeight:'bold', color:'var(--text-muted)'}}>Upload de Imagem:</label>
+            <input type="file" accept="image/*" onChange={handleImageUpload} style={{fontSize:'0.8rem', color: 'var(--text-main)'}} />
             {form.image_url && (
               <div style={{display:'flex', alignItems:'center', gap:'0.5rem', marginTop:'0.25rem'}}>
                 <span style={{fontSize:'0.7rem', color:'#10b981', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', maxWidth:'120px'}}>Enviado: {form.image_url}</span>
@@ -106,11 +106,11 @@ export default function PortfolioAdmin() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <button type="submit" style={{ padding: '0.75rem 1.5rem', background: '#0ea5e9', color: '#fff', border: 'none', borderRadius: '4px', cursor:'pointer' }}>
+          <button type="submit" style={{ padding: '0.75rem 1.5rem', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: '4px', cursor:'pointer', fontWeight: 600 }}>
             {editingId ? 'Salvar Alterações' : 'Adicionar Projeto'}
           </button>
           {editingId && (
-            <button type="button" onClick={handleCancelEdit} style={{ padding: '0.75rem 1.5rem', background: '#9ca3af', color: '#fff', border: 'none', borderRadius: '4px', cursor:'pointer' }}>
+            <button type="button" onClick={handleCancelEdit} style={{ padding: '0.75rem 1.5rem', background: 'var(--text-muted)', color: '#fff', border: 'none', borderRadius: '4px', cursor:'pointer', fontWeight: 600 }}>
               Cancelar Edição
             </button>
           )}
@@ -118,16 +118,16 @@ export default function PortfolioAdmin() {
       </form>
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {items.map(item => (
-          <li key={item.id} style={{ padding: '1.5rem', background: '#fff', marginBottom: '1rem', borderRadius: '8px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+          <li key={item.id} style={{ padding: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)', marginBottom: '1rem', borderRadius: '8px', boxShadow: 'var(--card-shadow)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <h3 style={{ color: '#0f172a', margin: '0 0 0.5rem 0' }}>{item.title}  <span style={{ fontSize:'0.75rem', padding:'0.2rem 0.5rem', background:'#e2e8f0', borderRadius:'12px', color:'#475569'}}>{item.category}</span></h3>
-                <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '0.5rem' }}>{item.description}</p>
-                {item.image_url && <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.5rem' }}>🖼️ Imagem: <code style={{background:'#f1f5f9', padding:'0.1rem 0.3rem', borderRadius:'3px'}}>{item.image_url}</code></div>}
-                <div style={{ color: '#0ea5e9', fontSize: '0.8rem', fontWeight: 'bold' }}>{item.tags}</div>
+                <h3 style={{ color: 'var(--text-main)', margin: '0 0 0.5rem 0' }}>{item.title}  <span style={{ fontSize:'0.75rem', padding:'0.2rem 0.5rem', background:'var(--bg-main)', border: '1px solid var(--border)', borderRadius:'12px', color:'var(--text-muted)'}}>{item.category}</span></h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>{item.description}</p>
+                {item.image_url && <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>🖼️ Imagem: <code style={{background:'var(--bg-main)', color: 'var(--text-main)', border: '1px solid var(--border)', padding:'0.1rem 0.3rem', borderRadius:'3px'}}>{item.image_url}</code></div>}
+                <div style={{ color: 'var(--accent)', fontSize: '0.8rem', fontWeight: 'bold' }}>{item.tags}</div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <button onClick={() => handleEditClick(item)} style={{ color: '#0ea5e9', border: 'none', background: 'none', cursor: 'pointer', fontWeight:'bold', padding:'0.5rem' }}>Editar</button>
+                <button onClick={() => handleEditClick(item)} style={{ color: 'var(--accent)', border: 'none', background: 'none', cursor: 'pointer', fontWeight:'bold', padding:'0.5rem' }}>Editar</button>
                 <button onClick={() => handleDelete(item.id)} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer', fontWeight:'bold', padding:'0.5rem' }}>Excluir</button>
               </div>
             </div>
