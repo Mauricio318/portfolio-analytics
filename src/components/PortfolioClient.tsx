@@ -42,6 +42,7 @@ export default function PortfolioClient({
   const [expandedJobs, setExpandedJobs] = useState<number[]>([]);
   const [visitCount, setVisitCount] = useState<number | null>(null);
   const [visitAnimated, setVisitAnimated] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const t = translations[lang];
 
   const toggleJob = (id: number) => {
@@ -385,7 +386,11 @@ export default function PortfolioClient({
         <div className={styles.certsGrid}>
           {certifications.map((cert) => (
             <div key={cert.id} className={styles.certCard}>
-              <div className={styles.certBadge}>
+              <div 
+                className={styles.certBadge} 
+                onClick={() => cert.image_url && setPreviewImage(cert.image_url)}
+                title={cert.image_url ? (lang === 'pt' ? 'Clique para ampliar' : 'Click to enlarge') : undefined}
+              >
                 {cert.image_url ? (
                   <img src={cert.image_url} alt={cert.title} style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '4px' }} />
                 ) : (
@@ -421,7 +426,11 @@ export default function PortfolioClient({
           <div className={styles.certsGrid}>
             {coursesList.map((course) => (
               <div key={course.id} className={styles.certCard}>
-                <div className={styles.certBadge}>
+                <div 
+                  className={styles.certBadge} 
+                  onClick={() => course.image_url && setPreviewImage(course.image_url)}
+                  title={course.image_url ? (lang === 'pt' ? 'Clique para ampliar' : 'Click to enlarge') : undefined}
+                >
                   {course.image_url ? (
                     <img src={course.image_url} alt={course.title} style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '4px' }} />
                   ) : (
@@ -511,6 +520,23 @@ export default function PortfolioClient({
           <p style={{ marginTop: '0.5rem' }}>{t.footerSubtitle}</p>
         </div>
       </footer>
+
+      {/* Lightbox Image Preview Modal */}
+      <div 
+        className={`${styles.modalOverlay} ${previewImage ? styles.modalOverlayActive : ''}`}
+        onClick={() => setPreviewImage(null)}
+      >
+        <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+          {previewImage && (
+            <>
+              <img src={previewImage} alt="Visualização da Certificação" className={styles.modalImage} />
+              <button className={styles.modalClose} onClick={() => setPreviewImage(null)} aria-label="Fechar">
+                &times;
+              </button>
+            </>
+          )}
+        </div>
+      </div>
     </>
   );
 }
