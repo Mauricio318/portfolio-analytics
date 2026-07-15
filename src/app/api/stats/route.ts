@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { cookies } from 'next/headers';
 import { decrypt } from '@/lib/auth';
+import Redis from 'ioredis';
 
 async function checkAuth() {
   const session = cookies().get('session')?.value;
@@ -9,13 +10,80 @@ async function checkAuth() {
   return await decrypt(session);
 }
 
+// Singleton para o cliente Redis TCP
+let redisClient: Redis | null = null;
+function getRedis() {
+  if (redisClient) return redisClient;
+  const redisUrl = process.env.KV_REDIS_URL;
+  if (!redisUrl) return null;
+  try {
+    redisClient = new Redis(redisUrl, {
+      maxRetriesPerRequest: 1,
+      connectTimeout: 5000,
+    });
+    return redisClient;
+  } catch (e) {
+    console.error('Erro ao conectar no Redis:', e);
+    return null;
+  }
+}
+
 export async function GET() {
   if (!await checkAuth()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
 
   try {
-    // 1. Tenta buscar o total de visitas em tempo real do CounterAPI em Produção
+    const isProd = process.env.VERCEL_URL || process.env.VERCEL || process.env.NODE_ENV === 'production';
+    const redis = getRedis();
+
+    // 1. Em Produção (Vercel): Carrega logs detalhados do Redis
+    if (isProd && redis) {
+      try {
+        const totalVal = await redis.get('visit_count');
+        const total = parseInt(totalVal || '0', 10);
+
+        // Busca lista de últimas visitas salvos no Redis
+        const list = await redis.lrange('recent_visits_list', 0, 99);
+        const recent = list.map(item => JSON.parse(item));
+
+        // Agrega estatísticas em tempo real no servidor
+        const countryMap: Record<string, number> = {};
+        const deviceMap: Record<string, number> = {};
+        const browserMap: Record<string, number> = {};
+
+        recent.forEach((v: any) => {
+          const country = v.country || 'Desconhecido';
+          const device = v.device || 'Desktop';
+          const browser = v.browser || 'Outro';
+          
+          countryMap[country] = (countryMap[country] || 0) + 1;
+          deviceMap[device] = (deviceMap[device] || 0) + 1;
+          browserMap[browser] = (browserMap[browser] || 0) + 1;
+        });
+
+        const byCountry = Object.entries(countryMap)
+          .map(([country, count]) => ({ country, count }))
+          .sort((a, b) => b.count - a.count);
+
+        const byDevice = Object.entries(deviceMap)
+          .map(([device, count]) => ({ device, count }))
+          .sort((a, b) => b.count - a.count);
+
+        const byBrowser = Object.entries(browserMap)
+          .map(([browser, count]) => ({ browser, count }))
+          .sort((a, b) => b.count - a.count);
+
+        return NextResponse.json({ total, byCountry, byDevice, byBrowser, recent: recent.slice(0, 20) });
+      } catch (e) {
+        console.error('Erro ao ler estatísticas do Redis:', e);
+      }
+    }
+
+    // 2. Localmente/Fallback: SQLite
+    const db = getDb(true);
     let total = 0;
-    if (process.env.VERCEL_URL || process.env.VERCEL) {
+    
+    // Se estiver na produção mas o Redis falhar, tenta ler o total da CounterAPI
+    if (isProd) {
       try {
         const res = await fetch('https://api.counterapi.dev/v1/mauriciobimbu/visits', {
           next: { revalidate: 0 }
@@ -24,15 +92,9 @@ export async function GET() {
           const data = await res.json();
           total = data.count || 0;
         }
-      } catch (e) {
-        console.error('Erro ao ler total da CounterAPI:', e);
-      }
+      } catch {}
     }
 
-    // 2. Busca os dados de detalhamento e histórico armazenados no SQLite estático
-    const db = getDb(true); // Abre em modo somente leitura (seguro na Vercel)
-
-    // Se não conseguimos ler do CounterAPI (ou se estamos local), usa o valor do SQLite
     if (total === 0) {
       const totalRow = db.prepare("SELECT value FROM settings WHERE key = 'visit_count'").get() as { value: string } | undefined;
       total = parseInt(totalRow?.value || '0', 10);
