@@ -253,11 +253,13 @@ erDiagram
 
 ---
 
-## 🔑 Acesso ao Painel Admin
+## 🔒 Segurança & Painel Administrativo
 
-- **URL do Admin**: `/admin/login`
-- **Senha Padrão**: Definida nas configurações do sistema ou variável de ambiente `ADMIN_PASSWORD`.
-- **Comportamento**: Quando logado, um cookie seguro ou sessão é ativado, exibindo a barra de controle administrativa e permitindo atualizações instantâneas no banco de dados.
+O sistema conta com um Painel Administrativo privado para gestão e atualização em tempo real do conteúdo:
+
+- **Autenticação Segura**: Acesso restrito via autenticação de senha de administrador configurada por variáveis de ambiente de produção.
+- **Gerenciamento de Sessão**: Utiliza cookies seguros com atributos de proteção (`HttpOnly` e `SameSite=Strict`), garantindo que apenas sessões autenticadas possam acessar os módulos de gerenciamento.
+- **Proteção de Rotas**: As rotas administrativas e APIs de gravação/edição são protegidas no lado do servidor por middlewares de autorização.
 
 ---
 
