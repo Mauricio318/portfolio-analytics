@@ -32,10 +32,17 @@ function parseDateValue(dateStr: string | null | undefined, isEnd = false): numb
   return 0;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const admin = searchParams.get('admin') === 'true';
     const db = getDb(true);
-    const items = db.prepare('SELECT * FROM resume_items ORDER BY sort_order ASC, id DESC').all() as any[];
+
+    const query = admin
+      ? 'SELECT * FROM resume_items ORDER BY sort_order ASC, id DESC'
+      : 'SELECT * FROM resume_items WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id DESC';
+
+    const items = db.prepare(query).all() as any[];
     return NextResponse.json(items);
   } catch (error) {
     return NextResponse.json({ error: 'Erro ao buscar dados' }, { status: 500 });
@@ -61,13 +68,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true });
     }
 
-    const { type, title, institution, start_date, end_date, description, technologies, image_url, link } = body;
+    if (body.action === 'toggle_visibility') {
+      const db = getDb();
+      db.prepare('UPDATE resume_items SET is_visible = ? WHERE id = ?').run(body.is_visible ? 1 : 0, body.id);
+      return NextResponse.json({ success: true });
+    }
+
+    const { type, title, institution, start_date, end_date, description, technologies, image_url, link, is_visible } = body;
     const db = getDb();
     const maxSort = db.prepare('SELECT MAX(sort_order) as max FROM resume_items').get() as { max: number };
     const sort_order = (maxSort?.max || 0) + 1;
 
-    const stmt = db.prepare('INSERT INTO resume_items (type, title, institution, start_date, end_date, description, technologies, image_url, link, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-    const info = stmt.run(type, title, institution, start_date, end_date, description, technologies, image_url, link, sort_order);
+    const stmt = db.prepare('INSERT INTO resume_items (type, title, institution, start_date, end_date, description, technologies, image_url, link, is_visible, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    const info = stmt.run(type, title, institution, start_date, end_date, description, technologies, image_url, link, is_visible !== undefined ? (is_visible ? 1 : 0) : 1, sort_order);
     
     return NextResponse.json({ id: info.lastInsertRowid, success: true });
   } catch (error) {
@@ -98,14 +111,14 @@ export async function PUT(request: Request) {
   
   try {
     const rawBody = await request.json();
-    const { id, type, title, institution, start_date, end_date, description, technologies, image_url, link } = sanitizeObject(rawBody);
+    const { id, type, title, institution, start_date, end_date, description, technologies, image_url, link, is_visible } = sanitizeObject(rawBody);
     const db = getDb();
     const oldItem = db.prepare('SELECT image_url FROM resume_items WHERE id = ?').get(id) as any;
     if (oldItem?.image_url && oldItem.image_url !== image_url) {
       await deleteUploadedFile(oldItem.image_url);
     }
-    const stmt = db.prepare('UPDATE resume_items SET type = ?, title = ?, institution = ?, start_date = ?, end_date = ?, description = ?, technologies = ?, image_url = ?, link = ? WHERE id = ?');
-    stmt.run(type, title, institution, start_date, end_date, description, technologies, image_url, link, id);
+    const stmt = db.prepare('UPDATE resume_items SET type = ?, title = ?, institution = ?, start_date = ?, end_date = ?, description = ?, technologies = ?, image_url = ?, link = ?, is_visible = ? WHERE id = ?');
+    stmt.run(type, title, institution, start_date, end_date, description, technologies, image_url, link, is_visible !== undefined ? (is_visible ? 1 : 0) : 1, id);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Erro ao salvar' }, { status: 500 });

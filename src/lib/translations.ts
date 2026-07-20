@@ -4,6 +4,7 @@ export interface TranslationStructure {
   // Nav / Header
   navHome: string;
   navPortfolio: string;
+  navServices: string;
   navExperience: string;
   navSkills: string;
   navContact: string;
@@ -14,6 +15,8 @@ export interface TranslationStructure {
   heroButtonContact: string;
   
   // Sections
+  sectionServicesTitle: string;
+  sectionServicesDesc: string;
   sectionProjectsTitle: string;
   sectionProjectsDesc: string;
   sectionTrajectoryTitle: string;
@@ -84,6 +87,7 @@ export const translations: Record<Language, TranslationStructure> = {
     // Nav / Header
     navHome: 'Início',
     navPortfolio: 'Projetos',
+    navServices: 'Serviços',
     navExperience: 'Experiência',
     navSkills: 'Habilidades',
     navContact: 'Contato',
@@ -94,6 +98,8 @@ export const translations: Record<Language, TranslationStructure> = {
     heroButtonContact: 'Entre em Contato',
     
     // Sections
+    sectionServicesTitle: 'O que eu posso fazer por você?',
+    sectionServicesDesc: 'Estes são alguns trabalhos em que posso utilizar minhas habilidades para gerar soluções eficientes e eficazes em problemas que você possa enfrentar.',
     sectionProjectsTitle: 'Casos e Projetos',
     sectionProjectsDesc: 'Nesta seção, apresento uma seleção de projetos que desenvolvi em Engenharia de Dados, Analytics e Inteligência de Negócios. Explore as soluções abaixo e clique para ver os detalhes completos, repositórios ou notebooks.',
     sectionTrajectoryTitle: 'Experiência Profissional',
@@ -159,6 +165,7 @@ export const translations: Record<Language, TranslationStructure> = {
     // Nav / Header
     navHome: 'Home',
     navPortfolio: 'Projects',
+    navServices: 'Services',
     navExperience: 'Experience',
     navSkills: 'Skills',
     navContact: 'Contact',
@@ -169,6 +176,8 @@ export const translations: Record<Language, TranslationStructure> = {
     heroButtonContact: 'Contact',
     
     // Sections
+    sectionServicesTitle: 'What can I do for you?',
+    sectionServicesDesc: 'These are key services where I apply data engineering, analytics, and AI skills to build effective and scalable solutions for your business challenges.',
     sectionProjectsTitle: 'Cases & Projects',
     sectionProjectsDesc: 'In this section, I present a selection of key data engineering, analytics, and business intelligence projects I built. Explore the solutions below and click to view full details, code, or notebooks.',
     sectionTrajectoryTitle: 'Professional Experience',
@@ -336,7 +345,52 @@ export const translations: Record<Language, TranslationStructure> = {
       'Análise profunda da taxa de turnover, correlacionando satisfação, faixa salarial e tempo de casa.': 'Deep analysis of turnover rate, correlating employee satisfaction, salary range, and tenure.',
       'Ciência de Dados': 'Data Science',
       'Dashboard de Análise Financeira': 'Financial Analysis Dashboard',
-      'Análise de desempenho empresarial. O projeto apresenta KPIs de Receita, Custos, Despesas e Lucro, além de análises temporais, ranking de clientes, composição de custos, distribuição de despesas e detalhamento mensal por meio de gráfico Waterfall e tabela gerencial.': 'Corporate performance analysis. The project features KPIs for Revenue, Costs, Expenses, and Profit, along with time series analysis, customer ranking, cost composition, expense breakdown, and monthly details via Waterfall chart and management table.'
+      'Análise de desempenho empresarial. O projeto apresenta KPIs de Receita, Custos, Despesas e Lucro, além de análises temporais, ranking de clientes, composição de custos, distribuição de despesas e detalhamento mensal por meio de gráfico Waterfall e tabela gerencial.': 'Corporate performance analysis. The project features KPIs for Revenue, Costs, Expenses, and Profit, along with time series analysis, customer ranking, cost composition, expense breakdown, and monthly details via Waterfall chart and management table.',
+
+      // Custom Dynamic Settings & Intro Texts
+      'Estes são os principais pontos de ganho de experiência e títulos que obtive durante minha jornada até hoje...': 'These are the key milestones of experience and credentials I have gained throughout my journey to date...',
+      'Sigo o conceito T-Shaped, pois acredito que a capacidade de produzir soluções eficazes e eficientes dependem fundamentalmente dos conhecimentos previamente adquiridos.': 'I follow the T-Shaped concept, believing that the ability to produce effective and efficient solutions fundamentally depends on previously acquired knowledge.',
+      'Estes são meus níveis de habilidade com as tecnologias mais populares no mercado atualmente:': 'These are my skill levels with the most popular technologies in the market today:',
+      'Nesta seção, apresento uma seleção de projetos que desenvolvi em Engenharia de Dados, Analytics e Inteligência de Negócios. Explore as soluções abaixo e clique para ver os detalhes completos, repositórios ou notebooks.': 'In this section, I present a selection of projects developed in Data Engineering, Analytics, and Business Intelligence. Explore the solutions below and click to view full details, repositories, or notebooks.',
+      'O que posso fazer pelo seu negócio?': 'What can I do for your business?',
+      'Soluções sob medida em Engenharia de Dados, Analytics e Inteligência Artificial.': 'Tailored solutions in Data Engineering, Analytics, and Artificial Intelligence.',
+      
+      // Services Items
+      'Engenharia de Dados & Pipelines ETL/ELT': 'Data Engineering & ETL/ELT Pipelines',
+      'Construção de pipelines Medallion escaláveis (Bronze, Silver, Gold), ingestão streaming/batch e orquestração robusta com Apache Spark, dbt e Airflow.': 'Building scalable Medallion pipelines (Bronze, Silver, Gold), streaming/batch ingestion, and robust orchestration with Apache Spark, dbt, and Airflow.',
+      'Engenharia de Dados (ETL/ELT)': 'Data Engineering (ETL/ELT)',
+      'Construção de Data Warehouses, Data Lakes e pipelines robustos (Batch & Streaming) no Azure, AWS e GCP.': 'Building robust Data Warehouses, Data Lakes, and pipelines (Batch & Streaming) on Azure, AWS, and GCP.',
+      'Análise Descritiva & Diagnóstica': 'Descriptive & Diagnostic Analytics',
+      'Exploração estatística minuciosa de grandes volumes de dados, modelagem dimensional e mineração para identificar causas raiz e comportamentos.': 'Thorough statistical exploration of large data volumes, dimensional modeling, and mining to identify root causes and behaviors.',
+      'Data Viz & Dashboards Executivos': 'Data Viz & Executive Dashboards',
+      'Modelagem dimensional e criação de relatórios interativos avançados no Power BI e SSRS.': 'Dimensional modeling and creation of advanced interactive reports in Power BI and SSRS.',
+      'Design de painéis interativos de alta performance (Power BI, Looker, Streamlit) focados na visualização clara da Big Picture estratégica.': 'High-performance interactive dashboard design (Power BI, Looker, Streamlit) focused on clear strategic Big Picture visualization.',
+      'Machine Learning & Analytics Preditivo': 'Machine Learning & Predictive Analytics',
+      'Desenvolvimento e implantação de modelos preditivos (Classificação, Regressão, Clusterização) aplicados à antecipação de tendências e decisão rápida.': 'Development and deployment of predictive models (Classification, Regression, Clustering) applied to trend anticipation and rapid decision making.',
+      'Ciência de Dados & Machine Learning': 'Data Science & Machine Learning',
+      'Desenvolvimento de modelos preditivos, People Analytics e análises avançadas em Python e R.': 'Predictive model development, People Analytics, and advanced analytics in Python and R.',
+      'Análise Prescritiva & Otimização': 'Prescriptive Analytics & Optimization',
+      'Formulação de estratégias orientadas a dados e simulação de cenários de decisão para otimizar eficiência operacional e reduzir custos.': 'Data-driven strategy formulation and decision scenario simulation to optimize operational efficiency and reduce costs.',
+      'Inteligência Artificial & Agentes LLM': 'Artificial Intelligence & LLM Agents',
+      'Integração de LLMs, busca vetorial (RAG) e automações inteligentes para otimização de processos.': 'LLM integration, vector search (RAG), and intelligent automation for process optimization.',
+      'Modelagem Econométrica & Quantitativa': 'Econometric & Quantitative Modeling',
+      'Aplicação de econometria avançada, séries temporais e estatística em variáveis complexas para extração de insights acionáveis.': 'Application of advanced econometrics, time series, and statistics on complex variables to extract actionable insights.',
+      'Análise Financeira & Econometria': 'Financial Analysis & Econometrics',
+      'Modelagem estatística, projeções de receita e análises profundas de DRE e fluxo de caixa.': 'Statistical modeling, revenue projections, and in-depth P&L and cash flow analysis.',
+      'Consultoria em Arquitetura de Dados & Cloud': 'Data Architecture & Cloud Consulting',
+      'Assessoria especializada em modernização de Data Warehouses, migração para nuvem (GCP, Azure, AWS) e governança de dados.': 'Specialized consulting on Data Warehouse modernization, cloud migration (GCP, Azure, AWS), and data governance.',
+      'Consultoria & Arquitetura de Dados': 'Data Architecture & Consulting',
+      'Planejamento de infraestrutura escalável, governança de dados e migração para a nuvem.': 'Scalable infrastructure planning, data governance, and cloud migration.',
+      'Desenvolvimento de APIs & Automação': 'API Development & Automation',
+      'Criação de microsserviços para integração de sistemas e rotinas automatizadas de dados.': 'Creation of microservices for system integration and automated data routines.',
+
+      // Metric Labels
+      'Projetos Entregues': 'Completed Projects',
+      'Em Andamento': 'Ongoing Projects',
+      'Estudos & Pesquisas': 'Research & Studies',
+      'Protótipos & Ideias': 'Prototypes & Ideas',
+      'Cafés Consumidos': 'Cups of Coffee',
+      'Horas de Engenharia': 'Engineering Hours'
     }
   }
 };

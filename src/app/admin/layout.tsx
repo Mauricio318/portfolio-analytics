@@ -5,6 +5,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const isLoginPage = pathname === '/admin/login';
 
   const getLinkStyle = (path: string): React.CSSProperties => {
     const isActive = pathname === path;
@@ -22,6 +23,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     };
   };
 
+  if (isLoginPage) {
+    return (
+      <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-main)', color: 'var(--text-main)' }}>
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--bg-main)', color: 'var(--text-main)' }}>
       <aside style={{ backgroundColor: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)', color: 'var(--text-main)', padding: '1rem' }}>
@@ -29,8 +38,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <nav style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center', alignItems: 'center' }}>
           <a href="/admin" style={getLinkStyle('/admin')}>Dashboard</a>
           <a href="/admin/portfolio" style={getLinkStyle('/admin/portfolio')}>Projetos</a>
+          <a href="/admin/servicos" style={getLinkStyle('/admin/servicos')}>Serviços & Métricas</a>
           <a href="/admin/resume" style={getLinkStyle('/admin/resume')}>Currículo</a>
           <a href="/admin/academico" style={getLinkStyle('/admin/academico')}>Lattes Acadêmico</a>
+          <a href="/admin/artigos" style={getLinkStyle('/admin/artigos')}>📰 Artigos & Blog</a>
           <a href="/admin/skills" style={getLinkStyle('/admin/skills')}>Habilidades</a>
           <a href="/admin/stats" style={getLinkStyle('/admin/stats')}>📊 Estatísticas</a>
           <a href="/" style={{ color: 'var(--text-muted)', textDecoration: 'none', padding: '0.6rem 0.9rem', borderLeft: '1px solid var(--border)', marginLeft: '0.5rem', whiteSpace: 'nowrap', fontSize: '0.9rem' }} target="_blank">Ver Site ↗</a>

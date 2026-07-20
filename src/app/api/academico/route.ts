@@ -150,6 +150,18 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true });
       }
 
+      case 'toggle_section_visibility': {
+        const { id, is_visible } = body;
+        db.prepare('UPDATE academic_sections SET is_visible = ? WHERE id = ?').run(is_visible ? 1 : 0, id);
+        return NextResponse.json({ success: true });
+      }
+
+      case 'toggle_item_visibility': {
+        const { id, is_visible } = body;
+        db.prepare('UPDATE academic_section_items SET is_visible = ? WHERE id = ?').run(is_visible ? 1 : 0, id);
+        return NextResponse.json({ success: true });
+      }
+
       default:
         return NextResponse.json({ error: 'Ação inválida' }, { status: 400 });
     }

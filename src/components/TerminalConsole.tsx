@@ -42,7 +42,7 @@ export default function TerminalConsole({
             <p style={{ color: '#10b981', fontWeight: 'bold' }}>MB OS v1.0.0 (Data Engine Kernel)</p>
             <p style={{ color: '#f8fafc', margin: '0.25rem 0' }}>{t.terminalWelcome}</p>
             <p style={{ color: '#38bdf8', opacity: 0.9, fontSize: '0.82rem' }}>
-              💡 {lang === 'pt' ? 'Comandos rápidos:' : 'Quick commands:'} <strong style={{ color: '#fbbf24' }}>help</strong> | <strong style={{ color: '#fbbf24' }}>bio</strong> | <strong style={{ color: '#fbbf24' }}>skills</strong> | <strong style={{ color: '#fbbf24' }}>projects</strong> | <strong style={{ color: '#fbbf24' }}>contact</strong> | <strong style={{ color: '#fbbf24' }}>clear</strong>
+              💡 {lang === 'pt' ? 'Comandos rápidos:' : 'Quick commands:'} <strong style={{ color: '#fbbf24' }}>help</strong> | <strong style={{ color: '#fbbf24' }}>bio</strong> | <strong style={{ color: '#fbbf24' }}>servicos</strong> | <strong style={{ color: '#fbbf24' }}>skills</strong> | <strong style={{ color: '#fbbf24' }}>projects</strong> | <strong style={{ color: '#fbbf24' }}>contact</strong> | <strong style={{ color: '#fbbf24' }}>clear</strong>
             </p>
           </div>
         )
@@ -198,6 +198,24 @@ export default function TerminalConsole({
         );
         break;
       }
+
+      case 'servicos':
+      case 'services':
+        output = (
+          <div style={{ color: '#f8fafc' }}>
+            <p style={{ color: '#ec4899', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+              🛠️ {lang === 'pt' ? 'Serviços de Dados & Analytics oferecidos:' : 'Data & Analytics Services Offered:'}
+            </p>
+            <p>• <strong style={{ color: '#38bdf8' }}>Descriptive Analysis:</strong> {lang === 'pt' ? 'Técnicas estatísticas para descrever, organizar e sumarizar dados.' : 'Statistical techniques to describe, organize and summarize datasets.'}</p>
+            <p>• <strong style={{ color: '#38bdf8' }}>Diagnostic Analysis:</strong> {lang === 'pt' ? 'Análise avançada, data mining e correlações para responder "Por que aconteceu?".' : 'Advanced analysis, data mining and correlations to answer "Why did it happen?".'}</p>
+            <p>• <strong style={{ color: '#38bdf8' }}>Machine Learning (Predictive):</strong> {lang === 'pt' ? 'Modelos preditivos para antecipar tendências e fatos futuros.' : 'Predictive ML models analyzing historical facts to forecast future events.'}</p>
+            <p>• <strong style={{ color: '#38bdf8' }}>Prescriptive Analysis:</strong> {lang === 'pt' ? 'Definição da melhor estratégia de ações com base nos dados.' : 'Define optimal action strategies based on available data.'}</p>
+            <p>• <strong style={{ color: '#38bdf8' }}>Econometric Analysis:</strong> {lang === 'pt' ? 'Ferramentas estatísticas em variáveis econômicas.' : 'Statistical tools and Data Science applied to economic variables.'}</p>
+            <p>• <strong style={{ color: '#38bdf8' }}>Data Visualization & Dashboards:</strong> {lang === 'pt' ? 'Gráficos e dashboards responsivos e interativos (Big Picture).' : 'Responsive, interactive dashboards providing the Big Picture.'}</p>
+            <p>• <strong style={{ color: '#38bdf8' }}>Consultancy:</strong> {lang === 'pt' ? 'Apoio especializado para definição e resolução de problemas de dados.' : 'Specialized support for data problem definition and architectural resolution.'}</p>
+          </div>
+        );
+        break;
 
       case 'sudo hack':
       case 'sudo':

@@ -26,6 +26,7 @@ interface AcademicSectionItem {
   tags: string;
   link: string;
   period: string;
+  is_visible?: number;
   sort_order: number;
 }
 
@@ -40,6 +41,7 @@ interface AcademicSection {
   content_en: string;
   tags: string;
   show_limit: number;
+  is_visible?: number;
   items: AcademicSectionItem[];
 }
 
@@ -74,7 +76,13 @@ export default function AcademicClient() {
         const res = await fetch('/api/academico');
         if (res.ok) {
           const data = await res.json();
-          setSections(data.sections || []);
+          const visibleSections = (data.sections || [])
+            .filter((s: AcademicSection) => s.is_visible === undefined || s.is_visible === null || s.is_visible === 1)
+            .map((s: AcademicSection) => ({
+              ...s,
+              items: (s.items || []).filter(i => i.is_visible === undefined || i.is_visible === null || i.is_visible === 1)
+            }));
+          setSections(visibleSections);
           setProfileSettings(data.settings || {});
         }
       } catch (err) {

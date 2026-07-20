@@ -29,6 +29,7 @@ interface AcademicSectionItem {
   tags: string;
   link: string;
   period: string;
+  is_visible?: number;
   sort_order: number;
 }
 
@@ -43,6 +44,7 @@ interface AcademicSection {
   content_en: string;
   tags: string;
   show_limit: number;
+  is_visible?: number;
   items: AcademicSectionItem[];
 }
 
@@ -287,6 +289,34 @@ export default function AdminAcademicClient() {
           action: 'delete_section',
           id
         })
+      });
+      loadData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleToggleSectionVisibility = async (sec: AcademicSection) => {
+    const newVisible = sec.is_visible === 0 ? 1 : 0;
+    try {
+      await fetch('/api/academico', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'toggle_section_visibility', id: sec.id, is_visible: newVisible })
+      });
+      loadData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleToggleItemVisibility = async (item: AcademicSectionItem) => {
+    const newVisible = item.is_visible === 0 ? 1 : 0;
+    try {
+      await fetch('/api/academico', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'toggle_item_visibility', id: item.id, is_visible: newVisible })
       });
       loadData();
     } catch (err) {
@@ -956,7 +986,14 @@ export default function AdminAcademicClient() {
                       </div>
                     </div>
                     
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); handleToggleSectionVisibility(sec); }} 
+                        style={{ padding: '0.4rem 0.75rem', background: sec.is_visible === 0 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)', border: '1px solid ' + (sec.is_visible === 0 ? '#ef4444' : '#10b981'), color: sec.is_visible === 0 ? '#ef4444' : '#10b981', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem' }}
+                        title="Alternar Visibilidade da Seção no Lattes"
+                      >
+                        {sec.is_visible === 0 ? '👁️‍🗨️ Seção Oculta' : '👁️ Seção Visível'}
+                      </button>
                       <button 
                         disabled={secIndex === 0} 
                         onClick={() => handleReorderSections(secIndex, 'up')} 
@@ -1006,10 +1043,13 @@ export default function AdminAcademicClient() {
                             {sec.items.length === 0 ? (
                               <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', margin: 0 }}>Nenhum item cadastrado nesta seção.</p>
                             ) : sec.items.map((item, itemIdx) => (
-                              <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-main)', border: '1px solid var(--border)', padding: '0.85rem 1.25rem', borderRadius: '8px' }}>
+                              <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-main)', border: '1px solid var(--border)', padding: '0.85rem 1.25rem', borderRadius: '8px', opacity: item.is_visible === 0 ? 0.6 : 1 }}>
                                 <div>
-                                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                     {item.title_pt} <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500 }}>({item.title_en})</span>
+                                    <span style={{ fontSize:'0.7rem', padding:'0.1rem 0.4rem', background: item.is_visible === 0 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)', border: '1px solid ' + (item.is_visible === 0 ? '#ef4444' : '#10b981'), borderRadius:'12px', color: item.is_visible === 0 ? '#ef4444' : '#10b981', fontWeight: 600 }}>
+                                      {item.is_visible === 0 ? '👁️‍🗨️ Oculto' : '👁️ Visível'}
+                                    </span>
                                   </div>
                                   <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.2rem', fontSize: '0.78rem' }}>
                                     {item.period && <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{item.period}</span>}
@@ -1020,7 +1060,14 @@ export default function AdminAcademicClient() {
                                   </div>
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '0.35rem' }}>
+                                <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
+                                  <button 
+                                    onClick={() => handleToggleItemVisibility(item)} 
+                                    style={{ padding: '0.3rem 0.55rem', background: item.is_visible === 0 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)', border: '1px solid ' + (item.is_visible === 0 ? '#ef4444' : '#10b981'), color: item.is_visible === 0 ? '#ef4444' : '#10b981', borderRadius: '4px', cursor: 'pointer', fontWeight: 600, fontSize: '0.75rem' }}
+                                    title="Alternar Visibilidade do Item"
+                                  >
+                                    {item.is_visible === 0 ? '👁️‍🗨️ Exibir' : '👁️ Ocultar'}
+                                  </button>
                                   <button 
                                     disabled={itemIdx === 0} 
                                     onClick={() => handleReorderItems(secIndex, itemIdx, 'up')}
