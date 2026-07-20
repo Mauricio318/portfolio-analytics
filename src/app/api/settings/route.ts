@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { decrypt } from '@/lib/auth';
 import { cookies } from 'next/headers';
+import { sanitizeInput } from '@/lib/security';
 
 async function checkAuth() {
   const session = cookies().get('session')?.value;
@@ -25,9 +26,12 @@ export async function POST(request: Request) {
   
   try {
     const { key, value } = await request.json();
+    const sanitizedKey = sanitizeInput(key);
+    const sanitizedValue = sanitizeInput(value);
+    
     const db = getDb();
     const stmt = db.prepare('INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value');
-    stmt.run(key, value);
+    stmt.run(sanitizedKey, sanitizedValue);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Erro ao salvar' }, { status: 500 });

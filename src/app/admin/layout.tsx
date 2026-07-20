@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { usePathname } from 'next/navigation';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -29,6 +30,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <a href="/admin" style={getLinkStyle('/admin')}>Dashboard</a>
           <a href="/admin/portfolio" style={getLinkStyle('/admin/portfolio')}>Projetos</a>
           <a href="/admin/resume" style={getLinkStyle('/admin/resume')}>Currículo</a>
+          <a href="/admin/academico" style={getLinkStyle('/admin/academico')}>Lattes Acadêmico</a>
           <a href="/admin/skills" style={getLinkStyle('/admin/skills')}>Habilidades</a>
           <a href="/admin/stats" style={getLinkStyle('/admin/stats')}>📊 Estatísticas</a>
           <a href="/" style={{ color: 'var(--text-muted)', textDecoration: 'none', padding: '0.6rem 0.9rem', borderLeft: '1px solid var(--border)', marginLeft: '0.5rem', whiteSpace: 'nowrap', fontSize: '0.9rem' }} target="_blank">Ver Site ↗</a>
@@ -37,6 +39,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               Sair
             </button>
           </form>
+          <div style={{ display: 'inline-flex', paddingLeft: '0.5rem' }}>
+            <ThemeToggle />
+          </div>
         </nav>
       </aside>
       <main style={{ flex: 1, padding: '1.5rem', overflowY: 'auto', maxWidth: '1200px', width: '100%', margin: '0 auto' }}>

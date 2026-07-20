@@ -26,7 +26,6 @@ export default function SkillsAdmin() {
     formData.append('file', file);
 
     try {
-      // Save under subfolder 'skills'
       const res = await fetch('/api/upload?type=skills', {
         method: 'POST',
         body: formData
@@ -93,6 +92,25 @@ export default function SkillsAdmin() {
     loadItems();
   };
 
+  const handleReorder = async (index: number, direction: 'up' | 'down') => {
+    const newItems = [...items];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= newItems.length) return;
+
+    const temp = newItems[index];
+    newItems[index] = newItems[targetIndex];
+    newItems[targetIndex] = temp;
+
+    const order = newItems.map((item, i) => ({ id: item.id, sort_order: i + 1 }));
+    setItems(newItems);
+
+    await fetch('/api/skills', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'reorder', order })
+    });
+  };
+
   return (
     <div>
       <h1 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'var(--text-main)' }}>Gerenciar Habilidades (Ferramentas Técnicas)</h1>
@@ -104,12 +122,23 @@ export default function SkillsAdmin() {
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            <label style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-muted)' }}>Upload de Logo da Ferramenta (Opcional):</label>
-            <input type="file" accept="image/*" onChange={handleImageUpload} style={{ fontSize: '0.8rem', color: 'var(--text-main)' }} />
+            <label style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-muted)' }}>Upload de Logo da Ferramenta (Opcional - Aceita SVG, PNG, JPG, WEBP):</label>
+            <input type="file" accept="image/*,.svg,.png,.jpg,.jpeg,.webp,.gif" onChange={handleImageUpload} style={{ fontSize: '0.8rem', color: 'var(--text-main)' }} />
             {imageUrl && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
                 <span style={{ fontSize: '0.7rem', color: '#10b981', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '200px' }}>Enviado: {imageUrl}</span>
-                <button type="button" onClick={() => setImageUrl('')} style={{ fontSize: '0.7rem', padding: '0.1rem 0.3rem', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Remover</button>
+                <button 
+                  type="button" 
+                  onClick={async () => {
+                    if (imageUrl && imageUrl.startsWith('/uploads/')) {
+                      await fetch(`/api/upload?filePath=${encodeURIComponent(imageUrl)}`, { method: 'DELETE' });
+                    }
+                    setImageUrl('');
+                  }} 
+                  style={{ fontSize: '0.7rem', padding: '0.1rem 0.3rem', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
+                >
+                  Remover
+                </button>
               </div>
             )}
           </div>
@@ -126,8 +155,8 @@ export default function SkillsAdmin() {
         </div>
       </form>
       <ul style={{ listStyle: 'none', padding: 0 }}>
-        {items.map(item => (
-          <li key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)', marginBottom: '0.5rem', borderRadius: '8px', boxShadow: 'var(--card-shadow)' }}>
+        {items.map((item, index) => (
+          <li key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)', marginBottom: '0.5rem', borderRadius: '8px', boxShadow: 'var(--card-shadow)', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               {item.image_url && (
                 <img src={item.image_url} alt={item.name} style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
@@ -136,7 +165,21 @@ export default function SkillsAdmin() {
                 <strong style={{ color: 'var(--text-main)' }}>{item.name}</strong> - {item.level} ({item.percentage}%)
               </div>
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <button 
+                disabled={index === 0}
+                onClick={() => handleReorder(index, 'up')}
+                style={{ padding: '0.35rem 0.65rem', background: 'var(--bg-main)', border: '1px solid var(--border)', borderRadius: '6px', cursor: index === 0 ? 'not-allowed' : 'pointer', opacity: index === 0 ? 0.5 : 1, color: 'var(--text-main)', fontSize: '0.8rem' }}
+              >
+                ▲ Subir
+              </button>
+              <button 
+                disabled={index === items.length - 1}
+                onClick={() => handleReorder(index, 'down')}
+                style={{ padding: '0.35rem 0.65rem', background: 'var(--bg-main)', border: '1px solid var(--border)', borderRadius: '6px', cursor: index === items.length - 1 ? 'not-allowed' : 'pointer', opacity: index === items.length - 1 ? 0.5 : 1, color: 'var(--text-main)', fontSize: '0.8rem' }}
+              >
+                ▼ Descer
+              </button>
               <button onClick={() => handleEditClick(item)} style={{ color: 'var(--accent)', border: 'none', background: 'none', cursor: 'pointer', fontWeight: 'bold' }}>Editar</button>
               <button onClick={() => handleDelete(item.id)} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer', fontWeight: 'bold' }}>Excluir</button>
             </div>

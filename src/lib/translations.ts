@@ -1,6 +1,85 @@
 export type Language = 'pt' | 'en';
 
-export const translations = {
+export interface TranslationStructure {
+  // Nav / Header
+  navHome: string;
+  navPortfolio: string;
+  navExperience: string;
+  navSkills: string;
+  navContact: string;
+  
+  // Hero
+  heroGreeting: string;
+  heroButtonProjects: string;
+  heroButtonContact: string;
+  
+  // Sections
+  sectionProjectsTitle: string;
+  sectionProjectsDesc: string;
+  sectionTrajectoryTitle: string;
+  sectionSkillsTitle: string;
+  sectionContactTitle: string;
+  
+  // Experience / Courses subtitles
+  subExperience: string;
+  subEducation: string;
+  
+  // Contact
+  contactDesc: string;
+  contactEmailBtn: string;
+  contactLinkedinBtn: string;
+  
+  // Footer
+  footerSubtitle: string;
+  footerRights: string;
+  
+  // Experience details translations
+  expShowDetails: string;
+  expHideDetails: string;
+  expToolsUsed: string;
+
+  // ETL Simulator translation keys
+  etlTitle: string;
+  etlSubtitle: string;
+  etlTooltip: string;
+  etlRunBtn: string;
+  etlRunningBtn: string;
+  etlSuccessBtn: string;
+  etlStatusIdle: string;
+  etlStatusExtracting: string;
+  etlStatusTransforming: string;
+  etlStatusLoading: string;
+  etlStatusFinished: string;
+  etlLogStart: string;
+  etlMetricVolume: string;
+  etlMetricSpeed: string;
+  etlMetricError: string;
+  etlMetricRows: string;
+  etlMetricQuality: string;
+  etlMetricThroughput: string;
+  etlMetricLatency: string;
+  etlUnitRows: string;
+  etlUnitNoNulls: string;
+  etlUnlocking: string;
+  etlExplainIdle: string;
+  etlExplainExtracting: string;
+  etlExplainTransforming: string;
+  etlExplainLoading: string;
+  etlExplainAnalyzing: string;
+  etlExplainFinished: string;
+
+  // Terminal translation keys
+  terminalTitle: string;
+  terminalPlaceholder: string;
+  terminalHelpText: string;
+  terminalWelcome: string;
+  terminalUnknown: string;
+
+  // Optional DB translations dictionary
+  dbTranslations?: Record<string, string>;
+}
+
+export const translations: Record<Language, TranslationStructure> = {
   pt: {
     // Nav / Header
     navHome: 'Início',
@@ -10,127 +89,71 @@ export const translations = {
     navContact: 'Contato',
     
     // Hero
-    heroGreeting: 'Olá, eu sou',
+    heroGreeting: 'Olá, me chamo',
     heroButtonProjects: 'Ver Projetos',
-    heroButtonContact: 'Contato',
+    heroButtonContact: 'Entre em Contato',
     
     // Sections
-    sectionProjectsTitle: 'Cases & Projetos',
+    sectionProjectsTitle: 'Casos e Projetos',
+    sectionProjectsDesc: 'Nesta seção, apresento uma seleção de projetos que desenvolvi em Engenharia de Dados, Analytics e Inteligência de Negócios. Explore as soluções abaixo e clique para ver os detalhes completos, repositórios ou notebooks.',
     sectionTrajectoryTitle: 'Experiência Profissional',
     sectionSkillsTitle: 'Habilidades Técnicas',
     sectionContactTitle: 'Contato',
     
     // Experience / Courses subtitles
     subExperience: 'Experiências',
-    subEducation: 'Formação & Cursos',
+    subEducation: 'Formação & Certificações',
     
     // Contact
-    contactDesc: 'Tem um desafio com dados ou projetos de engenharia em mente? Sinta-se à vontade para me contatar.',
+    contactDesc: 'Tem um desafio de dados ou projeto de engenharia em mente? Sinta-se à vontade para entrar em contato.',
     contactEmailBtn: 'Enviar E-mail',
     contactLinkedinBtn: 'Meu LinkedIn',
     
     // Footer
-    footerSubtitle: 'Cientista e Engenheiro de Dados.',
+    footerSubtitle: 'Cientista de Dados & Engenheiro de Dados.',
     footerRights: 'Todos os direitos reservados.',
     
     // Experience details translations
-    expShowDetails: 'Ver mais',
-    expHideDetails: 'Ver menos',
+    expShowDetails: 'Ver mais detalhes',
+    expHideDetails: 'Ocultar detalhes',
     expToolsUsed: 'Ferramentas Utilizadas:',
 
     // ETL Simulator translation keys
-    etlTitle: 'Simulador de Pipeline ETL (Engenharia de Dados)',
-    etlSubtitle: 'Monitore um fluxo de processamento de dados local rodando em tempo real.',
-    etlTooltip: 'Este simulador ilustra a orquestração que processa o currículo Lattes: lê o PDF brutamente, processa transformações com Python e dbt, normaliza no SQLite local e atualiza os dados na tela.',
-    etlRunBtn: 'Executar Pipeline',
-    etlRunningBtn: 'Processando...',
-    etlSuccessBtn: 'Pipeline Concluído!',
+    etlTitle: 'Simulador de Pipeline ETL',
+    etlSubtitle: 'Processamento Streaming & Batch com ingestão de JSON bruto, transformação dbt/Spark e carga em Data Warehouse.',
+    etlTooltip: 'Simula um pipeline moderno de Engenharia de Dados: Ingestão de dados brutos em JSON, validação e limpeza com dbt/Spark e carga final no Data Warehouse (DW).',
+    etlRunBtn: 'Executar Pipeline ETL',
+    etlRunningBtn: 'Processando Pipeline...',
+    etlSuccessBtn: 'Pipeline ETL Concluído!',
     etlStatusIdle: 'Aguardando inicialização...',
-    etlStatusExtracting: 'Extraindo dados brutos de fontes (PDFs/Lattes/DB)...',
-    etlStatusTransforming: 'Transformando, limpando dados com Python/dbt...',
-    etlStatusLoading: 'Carregando dados normalizados no Data Warehouse local...',
-    etlStatusFinished: 'Sucesso! Pipeline concluído e dashboard atualizado.',
-    etlLogStart: 'Iniciando pipeline de processamento às',
-    etlMetricVolume: 'Volume de Dados Processados',
-    etlMetricSpeed: 'Velocidade Média',
-    etlMetricError: 'Taxa de Erro',
-    etlUnlocking: 'Painel Analytics Desbloqueado!',
-    etlExplainIdle: 'Aguardando inicialização. Escolha suas configurações acima e clique em "Executar Pipeline" para ver o fluxo em ação.',
-    etlExplainExtracting: 'Fase de Extração (E): O pipeline está buscando os dados brutos nos arquivos locais e no currículo em PDF do Mauricio. Ele lê as informações desestruturadas para iniciar.',
-    etlExplainTransforming: 'Fase de Transformação (T): Os dados brutos extraídos são limpos, datas são padronizadas e as principais palavras-chave de tecnologia (como Python ou SQL) são catalogadas automaticamente.',
-    etlExplainLoading: 'Fase de Carga (L): Os dados limpos e estruturados são inseridos no nosso banco de dados SQLite local (portfolio.db) para que possam ser exibidos dinamicamente na tela.',
-    etlExplainAnalyzing: 'Fase de Análise: O banco de dados é reindexado para pesquisas rápidas e as métricas do painel analítico (linhas processadas, velocidade e erros) são consolidadas em tempo real.',
-    etlExplainFinished: 'Pipeline Concluído com Sucesso! Os dados foram processados de ponta a ponta e o painel analítico está ativo.',
+    etlStatusExtracting: '🥉 Ingerindo fluxo de eventos em JSON bruto na Camada Bronze...',
+    etlStatusTransforming: '🥈 Executando tratamento, qualidade (DQ) e mascaramento na Camada Prata...',
+    etlStatusLoading: '🥇 Modelando Star Schema e agregando métricas no Data Warehouse (DW)...',
+    etlStatusFinished: 'Sucesso! Pipeline concluído e Data Warehouse (DW) atualizado com 100% de integridade.',
+    etlLogStart: 'Iniciando orquestração Medallion Lakehouse às',
+    etlMetricVolume: 'Eventos Processados',
+    etlMetricSpeed: 'Vazão (Throughput)',
+    etlMetricError: 'Taxa de Erro DQ',
+    etlMetricRows: 'Linhas Processadas',
+    etlMetricQuality: 'Qualidade dos Dados (DQ)',
+    etlMetricThroughput: 'Vazão (Throughput)',
+    etlMetricLatency: 'Latência Pipeline',
+    etlUnitRows: 'linhas',
+    etlUnitNoNulls: 'sem nulos',
+    etlUnlocking: 'Data Warehouse (DW) Disponível!',
+    etlExplainIdle: 'Aguardando inicialização. Clique em "Executar Pipeline Medallion" para visualizar a ingestão e transformação dos dados em JSON.',
+    etlExplainExtracting: 'Camada Bronze (Bronze Layer): Ingestão bruta do payload JSON diretamente no Cloud Storage com particionamento temporal e auditoria de schema.',
+    etlExplainTransforming: 'Camada Prata (Silver Layer): Limpeza de nulos, deduplicação, mascaramento de PII (privacidade), conversão de timestamps UTC e salvamento em formato Delta/Parquet.',
+    etlExplainLoading: 'Camada Ouro (Gold Layer): Modelagem dimensional (Star Schema), cálculo de KPIs em tempo real e atualização no Data Warehouse (DW - BigQuery).',
+    etlExplainAnalyzing: 'Fase de Análise: Cálculo das métricas consolidadas (Volume Total, Score de Qualidade DQ e vazão por segundo).',
+    etlExplainFinished: 'Pipeline Medallion executado com 100% de sucesso! Camadas Bronze, Prata, Ouro e DW sincronizadas.',
     
     // Terminal translation keys
     terminalTitle: 'Terminal do Engenheiro de Dados (CLI)',
-    terminalPlaceholder: 'Digite um comando (ex: help, skills, bio, clear)...',
+    terminalPlaceholder: 'Digite um comando...',
     terminalHelpText: 'Comandos disponíveis: help | bio | skills | projects | contact | clear',
     terminalWelcome: 'Bem-vindo ao terminal interativo de Mauricio Bimbu. Digite "help" para ver os comandos.',
-    terminalUnknown: 'Comando não reconhecido. Digite "help" para ver a lista de comandos.',
-    
-    // Dynamic content translations mapping
-    dbTranslations: {
-      // Roles
-      'Engenheiro de Dados e Analista Especialista': 'Data Engineer & Specialist Analyst',
-      'Mestrando em Ciência da Computação (USP) com ampla experiência em infraestrutura, pipelines de dados e visualização. Especialista certificado em Power BI (PL-300), Fabric (DP-600) e Cloud Data Management. Focado em extrair valor e resolver problemas reais das organizações de ponta a ponta.': 'Computer Science M.Sc. Student (USP) with extensive experience in infrastructure, data pipelines, and visualization. Certified specialist in Power BI (PL-300), Fabric (DP-600), and Cloud Data Management. Focused on extracting value and solving real organizational problems end-to-end.',
-      
-      // Job Titles & Institutions
-      'Analista de Dados e Infraestrutura': 'Data & Infrastructure Analyst',
-      'Banco do Nordeste do Brasil (Terceirizado)': 'Banco do Nordeste (Contractor)',
-      'Professor de Aplicativos e IA': 'AI & Applications Instructor',
-      'Senac São Paulo': 'Senac São Paulo',
-      'Analista de Dados': 'Data Analyst',
-      'SAFE CONSIG': 'SAFE CONSIG',
-      'Analista de Dados (People Analytics)': 'Data Analyst (People Analytics)',
-      'Instituto Atlântico': 'Instituto Atlântico',
-      'Banco do Nordeste (Bolsista)': 'Banco do Nordeste (Scholarship Holder)',
-      
-      // Job/Course Descriptions
-      'Desenvolvimento e manutenção de relatórios; Pipelines em Python para integração; Monitoramento de capacidade e performance de servidores.': 'Development and maintenance of reports; Python integration pipelines; Capacity and performance monitoring of servers.',
-      'Professor de Power BI, Excel e Fundamentos de IA, com foco em mercado e resolução de problemas corporativos reais.': 'Instructor of Power BI, Excel, and AI Fundamentals, focusing on market needs and resolving real corporate problems.',
-      'Manipulação via Python e Pentaho, relatórios gerenciais Power BI. Automação de pipelines ETL e gestão de margens de consignações.': 'Data manipulation via Python and Pentaho, Power BI management reports. ETL pipeline automation and consignment margin management.',
-      'Coleta, análise e interpretação de dados de RH (rotatividade, satisfação) para predição de padrões e apoio à tomada de decisão.': 'HR data collection, analysis, and interpretation (turnover, satisfaction) to predict patterns and support decision-making.',
-      'Desenvolvimento de Dashboards Power BI e SSRS, automação via Python/VBA e acompanhamento de campanhas crédito.': 'Development of Power BI and SSRS Dashboards, automation via Python/VBA, and tracking of credit campaigns.',
-      
-      // Education/Certifications
-      'Mestrado em Ciência da Computação': 'M.Sc. in Computer Science',
-      'Universidade de São Paulo (USP)': 'University of São Paulo (USP)',
-      'Pesquisa aprofundada em sistemas e inteligência.': 'In-depth research in systems and computer intelligence.',
-      'MBA em Data Science e Analytics': 'MBA in Data Science & Analytics',
-      'Formação técnica avançada em Data Science aplicada aos negócios.': 'Advanced technical training in Data Science applied to business.',
-      'Graduação em Ciência da Computação': 'B.Sc. in Computer Science',
-      'Universidade Federal do Ceará (UFC)': 'Federal University of Ceará (UFC)',
-      'Formação fundamental em Engenharia de Software, Algoritmos e Dados.': 'Fundamental education in Software Engineering, Algorithms, and Data.',
-      'Microsoft Fabric Analytics Engineer Associate (DP-600)': 'Microsoft Fabric Analytics Engineer Associate (DP-600)',
-      'Microsoft Power BI Data Analyst (PL-300)': 'Microsoft Power BI Data Analyst (PL-300)',
-      'Oracle Cloud Data Management Foundations': 'Oracle Cloud Data Management Foundations',
-      'Certificação oficial.': 'Official certification.',
-      
-      // Skills
-      'Python & Computação': 'Python & Computing',
-      'Power BI & SSRS': 'Power BI & SSRS',
-      'ETL (Pentaho, dbt)': 'ETL (Pentaho, dbt)',
-      'SQL & Banco de Dados': 'SQL & Databases',
-      'Cloud (Azure, AWS, Oracle)': 'Cloud (Azure, AWS, Oracle)',
-      'Machine Learning & Estatística': 'Machine Learning & Statistics',
-      
-      // Skills Levels
-      'Avançado': 'Advanced',
-      'Muito bom': 'Very Good',
-      'Bom': 'Good',
-      
-      // Projects
-      'Dashboards de Performance': 'Performance Dashboards',
-      'Painel executivo no Power BI mapeando gargalos de infraestrutura de TI em tempo real.': 'Executive dashboard in Power BI mapping IT infrastructure bottlenecks in real time.',
-      'Visualização': 'Visualization',
-      'ETL Segurado e Ágil': 'Secure and Agile ETL',
-      'Mapeamento massivo de arquivos CSV e XML governamentais unificados em um Data Warehouse dinâmico.': 'Massive mapping of government CSV and XML files unified into a dynamic Data Warehouse.',
-      'Engenharia de Dados': 'Data Engineering',
-      'Modelo Preditivo People Analytics': 'People Analytics Predictive Model',
-      'Análise profunda da taxa de turnover, correlacionando satisfação, faixa salarial e tempo de casa.': 'Deep analysis of turnover rate, correlating employee satisfaction, salary range, and tenure.',
-      'Ciência de Dados': 'Data Science'
-    }
+    terminalUnknown: 'Comando não reconhecido. Digite "help" para ver a lista de comandos.'
   },
   en: {
     // Nav / Header
@@ -147,6 +170,7 @@ export const translations = {
     
     // Sections
     sectionProjectsTitle: 'Cases & Projects',
+    sectionProjectsDesc: 'In this section, I present a selection of key data engineering, analytics, and business intelligence projects I built. Explore the solutions below and click to view full details, code, or notebooks.',
     sectionTrajectoryTitle: 'Professional Experience',
     sectionSkillsTitle: 'Technical Skills',
     sectionContactTitle: 'Contact',
@@ -170,52 +194,79 @@ export const translations = {
     expToolsUsed: 'Tools Used:',
 
     // ETL Simulator translation keys
-    etlTitle: 'ETL Pipeline Simulator (Data Engineering)',
-    etlSubtitle: 'Monitor a local data processing flow running in real time.',
-    etlTooltip: 'This simulator illustrates the orchestration processing the Lattes resume: reading the raw PDF, processing transformations using Python and dbt, normalizing it in the local SQLite, and updating screen data.',
-    etlRunBtn: 'Run Pipeline',
-    etlRunningBtn: 'Processing...',
-    etlSuccessBtn: 'Pipeline Completed!',
+    etlTitle: 'ETL Pipeline Simulator',
+    etlSubtitle: 'Streaming & Batch processing with raw JSON ingestion, dbt/Spark transformation, and Data Warehouse load.',
+    etlTooltip: 'Simulates a modern data engineering pipeline: Raw JSON ingestion, validation and cleaning with dbt/Spark, and Data Warehouse load.',
+    etlRunBtn: 'Run ETL Pipeline',
+    etlRunningBtn: 'Processing Pipeline...',
+    etlSuccessBtn: 'ETL Pipeline Completed!',
     etlStatusIdle: 'Waiting for initiation...',
-    etlStatusExtracting: 'Extracting raw data from sources (PDFs/Lattes/DB)...',
-    etlStatusTransforming: 'Transforming, cleaning data with Python/dbt...',
-    etlStatusLoading: 'Loading normalized data into local Data Warehouse...',
-    etlStatusFinished: 'Success! Pipeline completed and dashboard updated.',
-    etlLogStart: 'Starting processing pipeline at',
-    etlMetricVolume: 'Processed Data Volume',
-    etlMetricSpeed: 'Average Speed',
-    etlMetricError: 'Error Rate',
-    etlUnlocking: 'Analytics Dashboard Unlocked!',
-    etlExplainIdle: 'Waiting for initiation. Choose your settings above and click "Run Pipeline" to see the flow in action.',
-    etlExplainExtracting: 'Extraction Phase (E): The pipeline is fetching raw data from local files and Mauricio\'s PDF resume. It reads unstructured information to begin.',
-    etlExplainTransforming: 'Transformation Phase (T): Extracted raw data is cleaned, dates are standardized, and key tech terms (like Python or SQL) are automatically cataloged.',
-    etlExplainLoading: 'Loading Phase (L): Clean and structured data is loaded into our local SQLite database (portfolio.db) to be dynamically displayed on the screen.',
-    etlExplainAnalyzing: 'Analysis Phase: The database is reindexed for quick search, and analytics dashboard metrics (processed rows, speed, errors) are consolidated in real time.',
-    etlExplainFinished: 'Pipeline Completed Successfully! The data was processed end-to-end and the analytics dashboard is active.',
+    etlStatusExtracting: '🥉 Ingesting raw JSON event stream into Bronze Layer...',
+    etlStatusTransforming: '🥈 Running transformations, data quality (DQ) checks & PII masking in Silver Layer...',
+    etlStatusLoading: '🥇 Modeling Star Schema & business metrics in Gold Layer...',
+    etlStatusFinished: 'Success! Pipeline completed and Gold Data Mart updated with 100% integrity.',
+    etlLogStart: 'Initiating Medallion Lakehouse orchestration at',
+    etlMetricVolume: 'Events Processed',
+    etlMetricSpeed: 'Throughput',
+    etlMetricError: 'DQ Error Rate',
+    etlMetricRows: 'Processed Rows',
+    etlMetricQuality: 'Data Quality (DQ)',
+    etlMetricThroughput: 'Throughput',
+    etlMetricLatency: 'Pipeline Latency',
+    etlUnitRows: 'rows',
+    etlUnitNoNulls: 'no nulls',
+    etlUnlocking: 'Gold Data Mart Available!',
+    etlExplainIdle: 'Waiting for initiation. Click "Run Medallion Pipeline" to view JSON ingestion and transformation.',
+    etlExplainExtracting: 'Bronze Layer: Raw JSON payload ingestion into Cloud Object Storage with temporal partitioning & schema audit.',
+    etlExplainTransforming: 'Silver Layer: Deduplication, null filtering, PII masking, UTC timestamp standardization, and writing to Parquet/Delta format.',
+    etlExplainLoading: 'Gold Layer: Dimensional modeling (Star Schema), computing real-time KPIs and materializing business data marts in BigQuery.',
+    etlExplainAnalyzing: 'Analysis Phase: Consolidated performance metric computation (Total Volume, DQ Quality Score & MB/s Throughput).',
+    etlExplainFinished: 'Medallion Pipeline executed with 100% success! Bronze, Silver, and Gold layers synchronized.',
     
     // Terminal translation keys
     terminalTitle: 'Data Engineer Terminal (CLI)',
-    terminalPlaceholder: 'Type a command (e.g., help, skills, bio, clear)...',
+    terminalPlaceholder: 'Type a command...',
     terminalHelpText: 'Available commands: help | bio | skills | projects | contact | clear',
     terminalWelcome: 'Welcome to Mauricio Bimbu\'s interactive terminal. Type "help" to see commands.',
     terminalUnknown: 'Command not recognized. Type "help" to view the command list.',
     
-    // Dynamic content translations mapping
+    // Dynamic content translations mapping (MUST BE IN EN ONLY)
     dbTranslations: {
-      // Roles
+      // Roles & Bio
+      'Analista de dados e Engenheiro de Dados.': 'Data Analyst & Data Engineer.',
+      'Analista de dados e Engenheiro de Dados': 'Data Analyst & Data Engineer',
+      'Analista de Dados e Engenheiro de Dados.': 'Data Analyst & Data Engineer.',
+      'Analista de Dados e Engenheiro de Dados': 'Data Analyst & Data Engineer',
+      'Analista de dados, Engenheiro de Dados.': 'Data Analyst, Data Engineer.',
+      'Analista de dados, Engenheiro de Dados': 'Data Analyst, Data Engineer',
+      'Cientista e Engenheiro de Dados.': 'Data Scientist & Data Engineer.',
+      'Cientista e Engenheiro de Dados': 'Data Scientist & Data Engineer',
       'Engenheiro de Dados e Analista Especialista': 'Data Engineer & Specialist Analyst',
+      'Analista de dados': 'Data Analyst',
+      'Analista de Dados': 'Data Analyst',
+      'Engenheiro de Dados': 'Data Engineer',
+      'Cientista de Dados': 'Data Scientist',
+      
+      'Mestrando em Ciência da Computação (USP) com ampla experiência em Analise de dados, pipelines de dados, visualização engenharia de dados. Especialista certificado em Power BI (PL-300), Fabric (DP-600) e Cloud Data Management. Focado em extrair valor e resolver problemas reais das organizações de ponta a ponta.': 'Computer Science M.Sc. Student (USP) with extensive experience in data analysis, data pipelines, visualization, and data engineering. Certified specialist in Power BI (PL-300), Fabric (DP-600), and Cloud Data Management. Focused on extracting value and solving real organizational problems end-to-end.',
       'Mestrando em Ciência da Computação (USP) com ampla experiência em infraestrutura, pipelines de dados e visualização. Especialista certificado em Power BI (PL-300), Fabric (DP-600) e Cloud Data Management. Focado em extrair valor e resolver problemas reais das organizações de ponta a ponta.': 'Computer Science M.Sc. Student (USP) with extensive experience in infrastructure, data pipelines, and visualization. Certified specialist in Power BI (PL-300), Fabric (DP-600), and Cloud Data Management. Focused on extracting value and solving real organizational problems end-to-end.',
       
       // Job Titles & Institutions
       'Analista de Dados e Infraestrutura': 'Data & Infrastructure Analyst',
+      'Analista de Dados e infraestrutura (Gestão de Capacidade e Disponibilidade)': 'Data & Infrastructure Analyst (Capacity and Availability Management)',
       'Banco do Nordeste do Brasil (Terceirizado)': 'Banco do Nordeste (Contractor)',
       'Professor de Aplicativos e IA': 'AI & Applications Instructor',
+      'Professor de Aplicativos e IA - (Temporário)': 'AI & Applications Instructor (Temporary)',
       'Senac São Paulo': 'Senac São Paulo',
-      'Analista de Dados': 'Data Analyst',
       'SAFE CONSIG': 'SAFE CONSIG',
       'Analista de Dados (People Analytics)': 'Data Analyst (People Analytics)',
+      'Analista de dados, People Analytics': 'Data Analyst, People Analytics',
       'Instituto Atlântico': 'Instituto Atlântico',
       'Banco do Nordeste (Bolsista)': 'Banco do Nordeste (Scholarship Holder)',
+      'Banco do Nordeste': 'Banco do Nordeste',
+      'Analista de dados - (Temporário)': 'Data Analyst (Temporary)',
+      'Grupo MOP': 'Grupo MOP',
+      'Voluntário - Hora do Código nas Escolas': 'Volunteer - Hour of Code in Schools',
+      'Fortaleza': 'Fortaleza',
       
       // Job/Course Descriptions
       'Desenvolvimento e manutenção de relatórios; Pipelines em Python para integração; Monitoramento de capacidade e performance de servidores.': 'Development and maintenance of reports; Python integration pipelines; Capacity and performance monitoring of servers.',
@@ -223,6 +274,20 @@ export const translations = {
       'Manipulação via Python e Pentaho, relatórios gerenciais Power BI. Automação de pipelines ETL e gestão de margens de consignações.': 'Data manipulation via Python and Pentaho, Power BI management reports. ETL pipeline automation and consignment margin management.',
       'Coleta, análise e interpretação de dados de RH (rotatividade, satisfação) para predição de padrões e apoio à tomada de decisão.': 'HR data collection, analysis, and interpretation (turnover, satisfaction) to predict patterns and support decision-making.',
       'Desenvolvimento de Dashboards Power BI e SSRS, automação via Python/VBA e acompanhamento de campanhas crédito.': 'Development of Power BI and SSRS Dashboards, automation via Python/VBA, and tracking of credit campaigns.',
+      
+      '• Desenvolvimento e manutenção de relatórios utilizando Power BI, SSRS (SQL Server Reporting Services) e Grafana.\n• Desenvolvimento de interfaces interativas em Streamlit para visualização e exploração de dados de capacidade e disponibilidade.\n• Implementação de pipelines de dados e automações em Python para integração de diferentes fontes com foco em coleta, tratamento e monitoramento contínuo.\n• Análise de capacidade e disponibilidade de sistemas, avaliando dados coletados por ferramentas de monitoramento.\n• Elaboração de dashboards de performance e uso de recursos (memória, CPU e disco) de servidores e monitoramento contínuo.\n• Análise de eventos e proposição de melhorias em parâmetros e componentes da infraestrutura de TI.\n• Definição de estratégias para otimização de recursos e redução de tempos de resposta.': '• Development and maintenance of reports using Power BI, SSRS (SQL Server Reporting Services), and Grafana.\n• Development of interactive Streamlit interfaces for visualization and exploration of capacity and availability data.\n• Implementation of data pipelines and Python automations for multi-source integration focused on continuous collection, processing, and monitoring.\n• System capacity and availability analysis, evaluating data collected by monitoring tools.\n• Creation of performance and server resource usage dashboards (memory, CPU, and disk) with continuous monitoring.\n• Event analysis and proposal of parameter and IT infrastructure improvements.\n• Strategy definition for resource optimization and response time reduction.',
+
+      '• Ministrei aulas nos cursos de Excel (básico ao avançado), Power BI e Fundamentos de Inteligência Artificial.\n• Planejamento e execução de aulas práticas e dinâmicas, com foco em aplicações corporativas e resolução de problemas reais.\n• Apoio no desenvolvimento de competências analíticas e digitais voltadas ao mercado de trabalho.\n• Participação em iniciativas educacionais voltadas à formação tecnológica e uso ético da IA.': '• Taught courses in Excel (basic to advanced), Power BI, and Artificial Intelligence Fundamentals.\n• Planning and execution of practical and dynamic classes focused on corporate applications and real-world problem solving.\n• Support in developing analytical and digital skills tailored for the job market.\n• Participation in educational initiatives focused on technological training and ethical AI use.',
+
+      'Manipulação de arquivos por meio de Python e Pentaho, desenvolvimento e manutenção de dashboards com o Power BI. Processamento de arquivos para gestão de margem para empréstimos consignáveis. Criação de novos bancos de dados para convênios recém- adquiridos. Manipulações, validações e inserção de informações em Banco de Dados, movimentação de dados, consultas SQL e procedimentos de manutenção. Execução fluída dos processamentos mensais, em conformidade com o calendário estabelecido.': 'Data manipulation via Python and Pentaho, development and maintenance of Power BI dashboards. File processing for payroll-deductible loan margin management. Database creation for newly acquired partnerships. Data manipulation, validation, and insertion into databases, SQL queries, and maintenance procedures. Smooth execution of monthly processing cycles in compliance with scheduled calendars.',
+
+      'Coletar, analisar e interpretar dados dos colaboradores da empresa, visando identificar padrões, tendências e correlações. Utilizando técnicas estatísticas e ferramentas de análise de dados para obter insights relevantes sobre desempenho, rotatividade, satisfação no trabalho, entre outros aspectos relacionados à gestão de pessoas. Apoia a tomada de decisões estratégicas por meio da comunicação clara e visualização de dados.': 'Collect, analyze, and interpret employee data to identify patterns, trends, and correlations. Using statistical techniques and data analysis tools to derive key insights regarding performance, turnover, and job satisfaction. Supports strategic decision-making through clear communication and data visualization.',
+
+      'Atuei na central de cartões, empréstimos e fundos de investimento, desempenhando as seguintes responsabilidades:\n• Desenvolvimento de dashboards utilizando Power BI e Reporting Services para análise e visualização de dados.\n• Automação de rotinas por meio de programação em VBA e Python, visando aumentar a eficiência e produtividade.\n\n• Elaboração de consultas SQL para obtenção de informações em banco de dados.\n• Auxílio na elaboração de relatórios de acompanhamento para gestão, fornecendo insights e informações relevantes.\n• Elaboração de relatórios em planilhas Excel e apresentação dos resultados.\n• Monitoramento de campanha de recuperação de crédito em parceria com empresas terceirizadas.': 'Worked at the cards, loans, and investment funds center, performing the following duties:\n• Development of dashboards using Power BI and Reporting Services for data analysis and visualization.\n• Routine automation via VBA and Python programming to enhance efficiency and productivity.\n\n• Writing SQL queries to retrieve database information.\n• Assisting in management tracking reports, providing insights and key metrics.\n• Preparing Excel spreadsheet reports and presenting results.\n• Monitoring credit recovery campaigns in partnership with third-party vendors.',
+
+      'Fui responsável pela extração e padronização de bases de dados relacionadas à cobrança e recuperação de crédito. Utilizei o Power BI para construir relatórios e apresentações visando a análise desses dados. Desenvolvi consultas SQL, Além disso, monitorei indicadores de negócio nesses setores e reportei os resultados à área responsável. Propus melhorias e criei dashboards personalizados para otimizar as operações, coordenando a implementação de processos baseados em dados para aprimorar a eficácia das áreas de negócio envolvidas.': 'Responsible for data extraction and standardization of credit collection and recovery databases. Used Power BI to build analytical reports and presentations. Developed SQL queries, monitored business KPIs in these sectors, and reported results to management. Proposed process improvements and created custom dashboards to optimize operations and drive data-driven efficiency.',
+
+      'Promoção de espaços de conhecimento para ensinar lógica de programação utilizando a plataforma Code.org, com uma abordagem interativa e acessível que incentiva o pensamento crítico e a resolução de problemas. Além disso, promove habilidades essenciais, como colaboração, criatividade e persistência. Realizado em escolas públicas da rede municipal de Fortaleza.': 'Promoting educational workshops to teach programming logic using the Code.org platform, with an interactive and accessible approach encouraging critical thinking and problem-solving. Promotes essential skills such as collaboration, creativity, and perseverance in public schools in Fortaleza.',
       
       // Education/Certifications
       'Mestrado em Ciência da Computação': 'M.Sc. in Computer Science',
@@ -233,20 +298,26 @@ export const translations = {
       'Graduação em Ciência da Computação': 'B.Sc. in Computer Science',
       'Universidade Federal do Ceará (UFC)': 'Federal University of Ceará (UFC)',
       'Formação fundamental em Engenharia de Software, Algoritmos e Dados.': 'Fundamental education in Software Engineering, Algorithms, and Data.',
+      'Especialização em Big Data (Ciência de Dados)': 'Specialization in Big Data (Data Science)',
+      'Faculdade Iguaçu': 'Faculdade Iguaçu',
+      'Especialidade focada em big data, infraestrutura de analytics e ciência de dados.': 'Specialization focused on big data, analytics infrastructure, and data science.',
       'Microsoft Fabric Analytics Engineer Associate (DP-600)': 'Microsoft Fabric Analytics Engineer Associate (DP-600)',
       'Microsoft Power BI Data Analyst (PL-300)': 'Microsoft Power BI Data Analyst (PL-300)',
       'Oracle Cloud Data Management Foundations': 'Oracle Cloud Data Management Foundations',
+      'Oracle Cloud Data Management 2023 Certified Foundations Associate': 'Oracle Cloud Data Management 2023 Certified Foundations Associate',
+      'Oracle Cloud Infrastructure AI Certified Foundations Associate': 'Oracle Cloud Infrastructure AI Certified Foundations Associate',
       'Certificação oficial.': 'Official certification.',
+      'Curso complementar relevante.': 'Relevant complementary course.',
       
-      // Skills
+      // Skills & Levels
+      'Gestão de Projetos de Dados': 'Data Project Management',
+      'Ética e Segurança de Dados': 'Data Ethics & Security',
       'Python & Computação': 'Python & Computing',
       'Power BI & SSRS': 'Power BI & SSRS',
       'ETL (Pentaho, dbt)': 'ETL (Pentaho, dbt)',
       'SQL & Banco de Dados': 'SQL & Databases',
       'Cloud (Azure, AWS, Oracle)': 'Cloud (Azure, AWS, Oracle)',
       'Machine Learning & Estatística': 'Machine Learning & Statistics',
-      
-      // Skills Levels
       'Avançado': 'Advanced',
       'Muito bom': 'Very Good',
       'Bom': 'Good',
@@ -263,7 +334,9 @@ export const translations = {
       'Engenharia de Dados': 'Data Engineering',
       'Modelo Preditivo People Analytics': 'People Analytics Predictive Model',
       'Análise profunda da taxa de turnover, correlacionando satisfação, faixa salarial e tempo de casa.': 'Deep analysis of turnover rate, correlating employee satisfaction, salary range, and tenure.',
-      'Ciência de Dados': 'Data Science'
+      'Ciência de Dados': 'Data Science',
+      'Dashboard de Análise Financeira': 'Financial Analysis Dashboard',
+      'Análise de desempenho empresarial. O projeto apresenta KPIs de Receita, Custos, Despesas e Lucro, além de análises temporais, ranking de clientes, composição de custos, distribuição de despesas e detalhamento mensal por meio de gráfico Waterfall e tabela gerencial.': 'Corporate performance analysis. The project features KPIs for Revenue, Costs, Expenses, and Profit, along with time series analysis, customer ranking, cost composition, expense breakdown, and monthly details via Waterfall chart and management table.'
     }
   }
 };
@@ -276,6 +349,39 @@ export function translateDbString(text: string | null | undefined, lang: Languag
   if (!text) return '';
   if (lang === 'pt') return text;
   
-  const translationsMap = translations.en.dbTranslations as Record<string, string>;
-  return translationsMap[text] || text;
+  const map = translations.en.dbTranslations as Record<string, string>;
+  if (!map) return text;
+
+  const raw = text.trim();
+  const normalized = raw.replace(/\s+/g, ' ');
+  const cleanDot = normalized.replace(/\.+$/, '');
+
+  // 1. Direct exact match
+  if (map[raw]) return map[raw];
+  if (map[normalized]) return map[normalized];
+  if (map[cleanDot]) return map[cleanDot];
+  if (map[text]) return map[text];
+
+  // 2. Short role lists ONLY (e.g. "Analista de dados, Engenheiro de Dados")
+  if (text.length < 85 && (text.includes(',') || text.includes(' e '))) {
+    const delimiter = text.includes(',') ? ',' : ' e ';
+    const joiner = delimiter === ',' ? ', ' : ' & ';
+    const parts = text.split(delimiter).map(part => {
+      const p = part.trim().replace(/\s+/g, ' ');
+      const pClean = p.replace(/\.+$/, '');
+      return map[p] || map[pClean] || p;
+    });
+    return parts.join(joiner) + (text.endsWith('.') ? '.' : '');
+  }
+
+  // 3. Fallback: replace phrase keys sorted by LENGTH DESCENDING (longest phrases first)
+  let result = normalized;
+  const sortedKeys = Object.keys(map).sort((a, b) => b.length - a.length);
+  for (const key of sortedKeys) {
+    if (key.length > 3 && result.includes(key)) {
+      result = result.replaceAll(key, map[key]);
+    }
+  }
+
+  return result;
 }

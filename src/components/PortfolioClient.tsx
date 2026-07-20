@@ -10,7 +10,9 @@ import {
   Terminal as TermIcon, 
   Workflow, 
   BookOpen, 
-  GraduationCap 
+  GraduationCap,
+  Eye,
+  X
 } from 'lucide-react';
 import styles from '../app/page.module.css';
 import { ThemeToggle } from './ThemeToggle';
@@ -43,6 +45,8 @@ export default function PortfolioClient({
   const [visitCount, setVisitCount] = useState<number | null>(null);
   const [visitAnimated, setVisitAnimated] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [selectedProject, setSelectedProject] = useState<any | null>(null);
+  const [activeSection, setActiveSection] = useState<string>('inicio');
   const t = translations[lang];
 
   const toggleJob = (id: number) => {
@@ -75,21 +79,37 @@ export default function PortfolioClient({
 
   useEffect(() => {
     setMounted(true);
-    // Automatic language detection
-    const systemLang = navigator.language || (navigator as any).userLanguage || 'pt';
-    const parsedLang: Language = systemLang.toLowerCase().startsWith('en') ? 'en' : 'pt';
-    setLang(parsedLang);
 
-    // Register visit — write marker BEFORE fetch to block StrictMode double-call
+    // 1. Language restoration
+    const savedLang = localStorage.getItem('mb_portfolio_lang') as Language;
+    if (savedLang === 'en' || savedLang === 'pt') {
+      setLang(savedLang);
+    } else {
+      const systemLang = navigator.language || (navigator as any).userLanguage || 'pt';
+      const parsedLang: Language = systemLang.toLowerCase().startsWith('en') ? 'en' : 'pt';
+      setLang(parsedLang);
+    }
+
+    // 2. Section hash restoration on refresh (F5 / Cmd+R)
+    const initialHash = window.location.hash.replace('#', '');
+    if (initialHash) {
+      setActiveSection(initialHash);
+      setTimeout(() => {
+        const targetElement = document.getElementById(initialHash);
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 150);
+    }
+
+    // 3. Register visit counter
     const saved = localStorage.getItem('mb_visit_number');
     const savedNumber = saved ? parseInt(saved, 10) : NaN;
 
     if (!isNaN(savedNumber) && savedNumber > 0) {
-      // Valid positive number already stored — show it without hitting the API
       setVisitCount(savedNumber);
       setTimeout(() => setVisitAnimated(true), 300);
     } else {
-      // New visitor (or stuck 'pending' / '0') — clear and register
       localStorage.setItem('mb_visit_number', 'pending');
       fetch('/api/visit', { method: 'POST' })
         .then(r => r.json())
@@ -102,6 +122,40 @@ export default function PortfolioClient({
           localStorage.removeItem('mb_visit_number');
         });
     }
+
+    // 4. Real-time scroll detection via IntersectionObserver
+    const sectionIds = ['inicio', 'portfolio', 'etl', 'experiencia', 'certifications', 'cursos', 'skills', 'terminal', 'contato'];
+    
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -55% 0px',
+      threshold: 0
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          setActiveSection(id);
+          const newHash = id === 'inicio' ? '#' : `#${id}`;
+          if (window.location.hash !== `#${id}` && (id !== 'inicio' || window.location.hash !== '')) {
+            window.history.replaceState(null, '', newHash);
+          }
+        }
+      });
+    }, observerOptions);
+
+    const timer = setTimeout(() => {
+      sectionIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el);
+      });
+    }, 200);
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
   }, []);
 
   const getOrdinal = (n: number, lang: Language): string => {
@@ -114,11 +168,15 @@ export default function PortfolioClient({
   };
 
   const toggleLanguage = () => {
-    setLang(prev => (prev === 'pt' ? 'en' : 'pt'));
+    setLang(prev => {
+      const next = prev === 'pt' ? 'en' : 'pt';
+      localStorage.setItem('mb_portfolio_lang', next);
+      return next;
+    });
   };
 
   if (!mounted) {
-    return null; // Prevent hydration mismatch
+    return null;
   }
 
   const certifications = initialCertifications;
@@ -132,15 +190,15 @@ export default function PortfolioClient({
         <div className={styles.navContainer}>
           <a href="#inicio" className={styles.logo}>MB. <span style={{ fontSize: '0.65rem', opacity: 0.6 }}>v1</span></a>
           <div className={styles.navLinks}>
-            <a href="#inicio">{t.navHome}</a>
-            <a href="#portfolio">{t.navPortfolio}</a>
-            <a href="#etl">{lang === 'pt' ? 'Simulador' : 'Simulator'}</a>
-            <a href="#experiencia">{t.navExperience}</a>
-            <a href="#certifications">{lang === 'pt' ? 'Certificações' : 'Certifications'}</a>
-            <a href="#cursos">{lang === 'pt' ? 'Cursos' : 'Courses'}</a>
-            <a href="#skills">{t.navSkills}</a>
-            <a href="#terminal">Terminal</a>
-            <a href="#contato">{t.navContact}</a>
+            <a href="#inicio" className={activeSection === 'inicio' ? styles.activeNavLink : ''}>{t.navHome}</a>
+            <a href="#portfolio" className={activeSection === 'portfolio' ? styles.activeNavLink : ''}>{t.navPortfolio}</a>
+            <a href="#etl" className={activeSection === 'etl' ? styles.activeNavLink : ''}>{lang === 'pt' ? 'Simulador' : 'Simulator'}</a>
+            <a href="#experiencia" className={activeSection === 'experiencia' ? styles.activeNavLink : ''}>{t.navExperience}</a>
+            <a href="#certifications" className={activeSection === 'certifications' ? styles.activeNavLink : ''}>{lang === 'pt' ? 'Certificações' : 'Certifications'}</a>
+            <a href="#cursos" className={activeSection === 'cursos' ? styles.activeNavLink : ''}>{lang === 'pt' ? 'Cursos' : 'Courses'}</a>
+            <a href="#skills" className={activeSection === 'skills' ? styles.activeNavLink : ''}>{t.navSkills}</a>
+            <a href="#terminal" className={activeSection === 'terminal' ? styles.activeNavLink : ''}>Terminal</a>
+            <a href="#contato" className={activeSection === 'contato' ? styles.activeNavLink : ''}>{t.navContact}</a>
           </div>
           <div className={styles.navControls}>
             {/* Language toggle */}
@@ -168,12 +226,9 @@ export default function PortfolioClient({
           </h1>
           <h2 className={styles.role}>{translateDbString(initialSettings.roles, lang)}</h2>
           <p className={styles.bio}>{translateDbString(initialSettings.bio, lang)}</p>
-          <div className={styles.heroBtns}>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '1.5rem' }}>
             <a href="#portfolio" className={styles.primaryBtn}>
               {t.heroButtonProjects} <ChevronRight size={18} />
-            </a>
-            <a href="#contato" className={styles.secondaryBtn}>
-              {t.heroButtonContact}
             </a>
             {initialSettings.cv_url && (
               <a 
@@ -198,6 +253,25 @@ export default function PortfolioClient({
                 </svg>
               </a>
             )}
+            <a 
+              href="/academico" 
+              className={styles.secondaryBtn}
+              style={{ 
+                borderColor: 'var(--accent)', 
+                background: 'color-mix(in srgb, var(--accent) 22%, transparent)',
+                color: 'var(--accent)', 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '0.5rem',
+                boxShadow: '0 0 12px color-mix(in srgb, var(--accent) 25%, transparent)'
+              }}
+            >
+              <span>{lang === 'pt' ? 'Currículo Acadêmico' : 'Academic CV'}</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+              </svg>
+            </a>
           </div>
 
           {/* Visitor Counter Badge */}
@@ -234,54 +308,141 @@ export default function PortfolioClient({
       {/* PORTFOLIO SECTION (Vitrine de Projetos) */}
       <section id="portfolio" className={`container ${styles.section}`}>
         <h2 className="section-title">{t.sectionProjectsTitle}</h2>
+        <p className={styles.sectionSubtitle}>
+          {translateDbString(initialSettings.projects_subtitle || t.sectionProjectsDesc, lang)}
+        </p>
         <div className={styles.portfolioGrid}>
           {initialPortfolio.map((item) => {
             const hasImage = !!item.image_url;
             return (
-              <div key={item.id} className={`${styles.projectCard} ${hasImage ? styles.projectCardFeatured : ''}`}>
-                {hasImage ? (
-                  <div className={styles.featuredLayout}>
-                    <div className={styles.featuredImageWrapper}>
-                      <img 
-                        src={item.image_url} 
-                        alt={translateDbString(item.title, lang)} 
-                        className={styles.featuredImage} 
-                      />
-                    </div>
-                    <div className={styles.featuredContent}>
-                      <div className={styles.projectCategory}>{translateDbString(item.category, lang)}</div>
-                      <h3 className={styles.projectTitle}>{translateDbString(item.title, lang)}</h3>
-                      <p className={styles.projectDesc}>{translateDbString(item.description, lang)}</p>
-                      <div className={styles.projectTags}>
-                        {item.tags?.split(',').map((tag: string, i: number) => (
-                          <span key={i} className={styles.tag}>{tag.trim()}</span>
-                        ))}
-                      </div>
-                      <a href={item.link || '#'} className={styles.projectLink} target="_blank" rel="noopener noreferrer">
-                        {lang === 'pt' ? 'Acessar Repositório' : 'Access Repository'} <ExternalLink size={16} />
-                      </a>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <div className={styles.projectCategory}>{translateDbString(item.category, lang)}</div>
-                    <h3 className={styles.projectTitle}>{translateDbString(item.title, lang)}</h3>
-                    <p className={styles.projectDesc}>{translateDbString(item.description, lang)}</p>
-                    <div className={styles.projectTags}>
-                      {item.tags?.split(',').map((tag: string, i: number) => (
-                        <span key={i} className={styles.tag}>{tag.trim()}</span>
-                      ))}
-                    </div>
-                    <a href={item.link || '#'} className={styles.projectLink} target="_blank" rel="noopener noreferrer">
-                      {lang === 'pt' ? 'Acessar Repositório' : 'Access Repository'} <ExternalLink size={16} />
-                    </a>
-                  </>
+              <div 
+                key={item.id} 
+                className={`${styles.projectCard} ${item.is_featured ? styles.projectCardFeatured : ''}`}
+              >
+                {hasImage && (
+                  <img 
+                    src={item.image_url} 
+                    alt={translateDbString(item.title, lang)} 
+                    className={styles.projectImage} 
+                    onClick={() => setSelectedProject(item)}
+                    style={{ cursor: 'pointer' }}
+                  />
                 )}
+                <div className={styles.projectCategory}>{translateDbString(item.category, lang)}</div>
+                <h3 className={styles.projectTitle}>{translateDbString(item.title, lang)}</h3>
+                <p className={styles.projectDesc}>{translateDbString(item.description, lang)}</p>
+                
+                {item.tags && (
+                  <div className={styles.projectTags}>
+                    {item.tags.split(',').map((tag: string, i: number) => (
+                      <span key={i} className={styles.tag}>{tag.trim()}</span>
+                    ))}
+                  </div>
+                )}
+
+                <div className={styles.projectCardActions}>
+                  <button 
+                    type="button" 
+                    onClick={() => setSelectedProject(item)} 
+                    className={styles.viewDetailsBtn}
+                  >
+                    <Eye size={14} />
+                    {lang === 'pt' ? 'Ver Detalhes' : 'View Details'}
+                  </button>
+
+                  {item.link && (
+                    <a 
+                      href={item.link} 
+                      className={styles.projectLink} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      {item.link.includes('github') || item.link.includes('ipynb') 
+                        ? (lang === 'pt' ? 'Repositório' : 'Repository')
+                        : (lang === 'pt' ? 'Acessar Link' : 'Open Link')
+                      } <ExternalLink size={14} />
+                    </a>
+                  )}
+                </div>
               </div>
             );
           })}
         </div>
       </section>
+
+      {/* FULL PROJECT DETAILS MODAL POPUP */}
+      <div 
+        className={`${styles.projectModalOverlay} ${selectedProject ? styles.projectModalOverlayActive : ''}`}
+        onClick={() => setSelectedProject(null)}
+      >
+        {selectedProject && (
+          <div className={styles.projectModalContent} onClick={(e) => e.stopPropagation()}>
+            <button 
+              className={styles.projectModalClose} 
+              onClick={() => setSelectedProject(null)}
+              aria-label="Close modal"
+            >
+              <X size={20} />
+            </button>
+
+            <div>
+              <div className={styles.projectCategory}>{translateDbString(selectedProject.category, lang)}</div>
+              <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)', margin: '0.25rem 0 0.5rem 0' }}>
+                {translateDbString(selectedProject.title, lang)}
+              </h2>
+            </div>
+
+            {selectedProject.image_url && (
+              <img 
+                src={selectedProject.image_url} 
+                alt={translateDbString(selectedProject.title, lang)} 
+                className={styles.projectModalImage} 
+              />
+            )}
+
+            <div className={styles.projectModalFullDesc}>
+              {translateDbString(selectedProject.description, lang)}
+            </div>
+
+            {selectedProject.tags && (
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+                {selectedProject.tags.split(',').map((tag: string, i: number) => (
+                  <span key={i} className={styles.tag} style={{ fontSize: '0.8rem', padding: '0.35rem 0.85rem' }}>
+                    {tag.trim()}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border)', flexWrap: 'wrap' }}>
+              {selectedProject.link && (
+                <a 
+                  href={selectedProject.link} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={styles.primaryBtn}
+                  style={{ padding: '0.65rem 1.5rem', fontSize: '0.88rem' }}
+                >
+                  <ExternalLink size={16} />
+                  {selectedProject.link.includes('github') || selectedProject.link.includes('ipynb')
+                    ? (lang === 'pt' ? 'Ver Código / Notebook no GitHub' : 'View Code / Notebook on GitHub')
+                    : (lang === 'pt' ? 'Acessar Projeto Completo' : 'Access Full Project')
+                  }
+                </a>
+              )}
+
+              <button 
+                type="button" 
+                onClick={() => setSelectedProject(null)}
+                className={styles.secondaryBtn}
+                style={{ padding: '0.65rem 1.5rem', fontSize: '0.88rem' }}
+              >
+                {lang === 'pt' ? 'Fechar' : 'Close'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* ETL SIMULATOR SECTION */}
       <section id="etl" className={`container ${styles.section}`} style={{ borderTop: '1px solid var(--border)' }}>
@@ -316,7 +477,7 @@ export default function PortfolioClient({
                     <div className={styles.timelineCompany}>{translateDbString(job.institution, lang)}</div>
                     
                     {/* Main description always visible */}
-                    <p className={styles.timelineDesc}>
+                    <p className={styles.timelineDesc} style={{ whiteSpace: 'pre-line' }}>
                       {main}{!isExpanded && hasMore ? '...' : ''}
                     </p>
 
@@ -324,7 +485,7 @@ export default function PortfolioClient({
                     {isExpanded && (
                       <div className={styles.jobDetails}>
                         {rest && (
-                          <p className={styles.timelineDesc} style={{ marginTop: '0.25rem' }}>
+                          <p className={styles.timelineDesc} style={{ marginTop: '0.25rem', whiteSpace: 'pre-line' }}>
                             {rest}
                           </p>
                         )}
@@ -468,13 +629,15 @@ export default function PortfolioClient({
         <div className={styles.skillsGrid}>
           {initialSkills.map((skill) => (
             <div key={skill.id} className={styles.skillItem}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '1rem' }}>
                 {skill.image_url && (
-                  <img src={skill.image_url} alt={skill.name} style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+                  <div style={{ width: '38px', height: '38px', borderRadius: '10px', padding: '6px', background: 'var(--bg-main)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 6px rgba(0,0,0,0.05)' }}>
+                    <img src={skill.image_url} alt={skill.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  </div>
                 )}
                 <div style={{ flex: 1 }}>
                   <div className={styles.skillHeader} style={{ marginBottom: 0 }}>
-                    <span>{translateDbString(skill.name, lang)}</span>
+                    <span style={{ fontWeight: 700, color: 'var(--text-main)' }}>{translateDbString(skill.name, lang)}</span>
                     <span className={styles.skillLevel}>{translateDbString(skill.level, lang)}</span>
                   </div>
                 </div>
@@ -493,7 +656,14 @@ export default function PortfolioClient({
           <TermIcon color="var(--accent)" size={32} />
           {lang === 'pt' ? 'Console do Engenheiro' : 'Engineer Console'}
         </h2>
-        <TerminalConsole lang={lang} />
+        <TerminalConsole 
+          lang={lang} 
+          settings={initialSettings} 
+          skills={initialSkills} 
+          jobs={initialJobs} 
+          academic={academicList} 
+          portfolio={initialPortfolio} 
+        />
       </section>
 
       {/* CONTACT SECTION */}
@@ -502,10 +672,10 @@ export default function PortfolioClient({
         <div className={styles.contactContainer}>
           <p className={styles.contactDesc}>{t.contactDesc}</p>
           <div className={styles.contactBtns}>
-            <a href="mailto:mauriciozinibu@gmail.com" className={styles.primaryBtn}>
+            <a href={`mailto:${initialSettings.email || initialSettings.contact_email || 'mauriciozinibu@gmail.com'}`} className={styles.primaryBtn}>
               {t.contactEmailBtn}
             </a>
-            <a href="https://www.linkedin.com/in/mauriciobimbu/" target="_blank" rel="noopener noreferrer" className={styles.linkedinBtn}>
+            <a href={initialSettings.linkedin || 'https://www.linkedin.com/in/mauriciobimbu/'} target="_blank" rel="noopener noreferrer" className={styles.linkedinBtn}>
               {t.contactLinkedinBtn}
             </a>
           </div>
@@ -516,8 +686,8 @@ export default function PortfolioClient({
       <footer className={styles.footer}>
         <div className="container">
           <div className={styles.footerLogo}>MB.</div>
-          <p>© {new Date().getFullYear()} Mauricio Garcia Bimbu. {t.footerRights} | v1</p>
-          <p style={{ marginTop: '0.5rem' }}>{t.footerSubtitle}</p>
+          <p>© {new Date().getFullYear()} {initialSettings.name || 'Mauricio Garcia Bimbu'}. {t.footerRights}</p>
+          <p style={{ marginTop: '0.5rem' }}>{translateDbString(initialSettings.roles, lang)}</p>
         </div>
       </footer>
 

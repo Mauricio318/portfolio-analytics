@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 
 export default function ResumeAdmin() {
   const [items, setItems] = useState<any[]>([]);
+  const [filterType, setFilterType] = useState<string>('all');
   const [form, setForm] = useState({ type: 'job', title: '', institution: '', start_date: '', end_date: '', description: '', technologies: '', image_url: '', link: '' });
   const [uploading, setUploading] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -10,7 +11,7 @@ export default function ResumeAdmin() {
   // CV PDF Settings states
   const [cvUrl, setCvUrl] = useState('');
   const [uploadingCv, setUploadingCv] = useState(false);
-  const [profile, setProfile] = useState({ name: '', roles: '', bio: '' });
+  const [profile, setProfile] = useState({ name: '', roles: '', bio: '', email: '', linkedin: '' });
 
   const loadItems = async () => {
     const res = await fetch('/api/resume');
@@ -25,7 +26,9 @@ export default function ResumeAdmin() {
       setProfile({
         name: data.name || '',
         roles: data.roles || '',
-        bio: data.bio || ''
+        bio: data.bio || '',
+        email: data.email || data.contact_email || 'mauriciozinibu@gmail.com',
+        linkedin: data.linkedin || 'https://www.linkedin.com/in/mauriciobimbu/'
       });
     }
   };
@@ -50,7 +53,19 @@ export default function ResumeAdmin() {
         method: 'POST',
         body: JSON.stringify({ key: 'bio', value: profile.bio })
       });
-      alert('Perfil atualizado com sucesso!');
+      await fetch('/api/settings', {
+        method: 'POST',
+        body: JSON.stringify({ key: 'email', value: profile.email })
+      });
+      await fetch('/api/settings', {
+        method: 'POST',
+        body: JSON.stringify({ key: 'contact_email', value: profile.email })
+      });
+      await fetch('/api/settings', {
+        method: 'POST',
+        body: JSON.stringify({ key: 'linkedin', value: profile.linkedin })
+      });
+      alert('Perfil e contatos atualizados com sucesso!');
     } catch (err) {
       console.error(err);
       alert('Erro ao salvar as configurações de perfil.');
@@ -66,7 +81,6 @@ export default function ResumeAdmin() {
     formData.append('file', file);
 
     try {
-      // Save under subfolder 'cv'
       const res = await fetch('/api/upload?type=cv', {
         method: 'POST',
         body: formData
@@ -76,7 +90,6 @@ export default function ResumeAdmin() {
         const data = await res.json();
         const path = data.filePath;
         
-        // Save path in settings DB table
         const saveRes = await fetch('/api/settings', {
           method: 'POST',
           body: JSON.stringify({ key: 'cv_url', value: path })
@@ -124,7 +137,6 @@ export default function ResumeAdmin() {
     const formData = new FormData();
     formData.append('file', file);
 
-    // Save into subfolder based on the selected type
     const folderType = form.type === 'certification' ? 'certifications' : 'courses';
 
     try {
@@ -160,7 +172,6 @@ export default function ResumeAdmin() {
       await fetch('/api/resume', { method: 'POST', body: JSON.stringify(form) });
     }
     
-    // Reset inputs but preserve the type to avoid resetting select menu
     setForm(prev => ({ 
       type: prev.type, 
       title: '', 
@@ -209,6 +220,38 @@ export default function ResumeAdmin() {
     if(!confirm('Certeza que deseja deletar este item?')) return;
     await fetch(`/api/resume?id=${id}`, { method: 'DELETE' });
     loadItems();
+  };
+
+  const filteredItems = filterType === 'all' 
+    ? items 
+    : items.filter(item => item.type === filterType);
+
+  const handleReorder = async (index: number, direction: 'up' | 'down') => {
+    const activeList = filteredItems;
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= activeList.length) return;
+
+    const itemA = activeList[index];
+    const itemB = activeList[targetIndex];
+
+    const mainIndexA = items.findIndex(i => i.id === itemA.id);
+    const mainIndexB = items.findIndex(i => i.id === itemB.id);
+
+    if (mainIndexA === -1 || mainIndexB === -1) return;
+
+    const newItems = [...items];
+    const temp = newItems[mainIndexA];
+    newItems[mainIndexA] = newItems[mainIndexB];
+    newItems[mainIndexB] = temp;
+
+    const order = newItems.map((item, i) => ({ id: item.id, sort_order: i + 1 }));
+    setItems(newItems);
+
+    await fetch('/api/resume', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'reorder', order })
+    });
   };
 
   const getTypeName = (type: string) => {
@@ -293,6 +336,29 @@ export default function ResumeAdmin() {
             />
           </div>
         </div>
+
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+            <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-muted)' }}>E-mail de Contato:</label>
+            <input 
+              type="email" 
+              value={profile.email} 
+              onChange={e => setProfile({ ...profile, email: e.target.value })} 
+              required 
+              style={{ padding: '0.75rem', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-main)', background: 'var(--bg-main)' }} 
+            />
+          </div>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+            <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-muted)' }}>Link do Perfil LinkedIn:</label>
+            <input 
+              type="url" 
+              value={profile.linkedin} 
+              onChange={e => setProfile({ ...profile, linkedin: e.target.value })} 
+              required 
+              style={{ padding: '0.75rem', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-main)', background: 'var(--bg-main)' }} 
+            />
+          </div>
+        </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
           <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-muted)' }}>Biografia:</label>
           <textarea 
@@ -333,7 +399,6 @@ export default function ResumeAdmin() {
           <input placeholder="Ferramentas (Ex: Python, Airflow) - Separadas por vírgula" value={form.technologies} onChange={e => setForm({...form, technologies: e.target.value})} style={{flex:2, padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
           <input placeholder="Link / Credencial (URL de verificação)" value={form.link} onChange={e => setForm({...form, link: e.target.value})} style={{flex:2, padding:'0.75rem', border:'1px solid var(--border)', borderRadius:'4px', color: 'var(--text-main)', background: 'var(--bg-main)'}} />
           
-          {/* Only certifications and informal courses can have images */}
           {['certification', 'course'].includes(form.type) && (
             <div style={{flex:2, display:'flex', gap:'1rem', flexWrap:'wrap', width:'100%'}}>
               <div style={{flex:2, display:'flex', flexDirection:'column', gap:'0.25rem'}}>
@@ -367,23 +432,73 @@ export default function ResumeAdmin() {
         </div>
       </form>
 
+      {/* Category Filter Tabs */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap', padding: '1rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px' }}>
+        <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--text-muted)', marginRight: '0.5rem' }}>
+          🔍 Filtrar Categoria:
+        </span>
+        {[
+          { key: 'all', label: 'Todos os Itens', count: items.length },
+          { key: 'job', label: '💼 Experiência Profissional', count: items.filter(i => i.type === 'job').length },
+          { key: 'academic', label: '🎓 Formação Acadêmica', count: items.filter(i => i.type === 'academic').length },
+          { key: 'certification', label: '📜 Certificações', count: items.filter(i => i.type === 'certification').length },
+          { key: 'course', label: '📚 Cursos Complementares', count: items.filter(i => i.type === 'course').length },
+        ].map(cat => {
+          const isActive = filterType === cat.key;
+          return (
+            <button
+              key={cat.key}
+              type="button"
+              onClick={() => setFilterType(cat.key)}
+              style={{
+                padding: '0.5rem 1rem',
+                borderRadius: '8px',
+                border: '1px solid ' + (isActive ? 'var(--accent)' : 'var(--border)'),
+                background: isActive ? 'var(--accent)' : 'var(--bg-main)',
+                color: isActive ? '#fff' : 'var(--text-main)',
+                cursor: 'pointer',
+                fontWeight: isActive ? 700 : 500,
+                fontSize: '0.85rem',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {cat.label} ({cat.count})
+            </button>
+          );
+        })}
+      </div>
+
       <ul style={{ listStyle: 'none', padding: 0 }}>
-        {items.map(item => {
+        {filteredItems.map((item, index) => {
           const colors = getTypeColor(item.type);
           return (
             <li key={item.id} style={{ padding: '1.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)', marginBottom: '1rem', borderRadius: '8px', boxShadow: 'var(--card-shadow)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                <div style={{ flex: 1 }}>
                   <h3 style={{ color: 'var(--text-main)', margin: '0 0 0.25rem 0' }}>
                     {item.title} <span style={{ fontSize:'0.75rem', padding:'0.2rem 0.5rem', background: colors.bg, color: colors.text, borderRadius:'12px', marginLeft: '0.5rem'}}>{getTypeName(item.type)}</span>
                   </h3>
                   <h4 style={{ color: 'var(--text-muted)', margin: '0 0 0.5rem 0', fontWeight: 'normal' }}>{item.institution} ({item.start_date} - {item.end_date || 'Atual'})</h4>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0' }}>{item.description}</p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0', whiteSpace: 'pre-line' }}>{item.description}</p>
                   {item.technologies && <div style={{ color: 'var(--accent)', fontSize: '0.8rem', fontWeight: 'bold', marginTop: '0.25rem' }}>🛠️ Ferramentas: {item.technologies}</div>}
                   {item.link && <div style={{ color: 'var(--accent)', fontSize: '0.8rem', marginTop: '0.25rem' }}>🔗 Link: <a href={item.link} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>{item.link}</a></div>}
                   {item.image_url && <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.25rem' }}>🖼️ Imagem: <code>{item.image_url}</code></div>}
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <button 
+                    disabled={index === 0}
+                    onClick={() => handleReorder(index, 'up')}
+                    style={{ padding: '0.35rem 0.65rem', background: 'var(--bg-main)', border: '1px solid var(--border)', borderRadius: '6px', cursor: index === 0 ? 'not-allowed' : 'pointer', opacity: index === 0 ? 0.5 : 1, color: 'var(--text-main)', fontSize: '0.8rem' }}
+                  >
+                    ▲ Subir
+                  </button>
+                  <button 
+                    disabled={index === filteredItems.length - 1}
+                    onClick={() => handleReorder(index, 'down')}
+                    style={{ padding: '0.35rem 0.65rem', background: 'var(--bg-main)', border: '1px solid var(--border)', borderRadius: '6px', cursor: index === filteredItems.length - 1 ? 'not-allowed' : 'pointer', opacity: index === filteredItems.length - 1 ? 0.5 : 1, color: 'var(--text-main)', fontSize: '0.8rem' }}
+                  >
+                    ▼ Descer
+                  </button>
                   <button onClick={() => handleEditClick(item)} style={{ color: 'var(--accent)', border: 'none', background: 'none', cursor: 'pointer', fontWeight:'bold', padding:'0.5rem' }}>Editar</button>
                   <button onClick={() => handleDelete(item.id)} style={{ color: '#ef4444', border: 'none', background: 'none', cursor: 'pointer', fontWeight:'bold', padding:'0.5rem' }}>Excluir</button>
                 </div>

@@ -33,22 +33,31 @@ function getRedis() {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   if (!await checkAuth()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
 
   try {
+    const url = new URL(request.url);
+    const targetPage = url.searchParams.get('page') || 'all'; // 'all', '/', '/academico'
+
     const isProd = process.env.VERCEL_URL || process.env.VERCEL || process.env.NODE_ENV === 'production';
     const redis = getRedis();
 
     // 1. Em Produção (Vercel): Carrega logs detalhados do Redis
     if (isProd && redis) {
       try {
-        const totalVal = await redis.get('visit_count');
+        const countKey = targetPage === '/academico' ? 'visit_count_academic' : 'visit_count';
+        const totalVal = await redis.get(countKey);
         const total = parseInt(totalVal || '0', 10);
 
         // Busca lista de últimas visitas salvos no Redis
         const list = await redis.lrange('recent_visits_list', 0, 99);
-        const recent = list.map(item => JSON.parse(item));
+        const allRecent = list.map(item => JSON.parse(item));
+        
+        // Filtra por página alvo se necessário
+        const recent = targetPage === 'all' 
+          ? allRecent 
+          : allRecent.filter((v: any) => v.page === targetPage || (targetPage === '/' && (!v.page || v.page === '/')));
 
         // Agrega estatísticas em tempo real no servidor
         const countryMap: Record<string, number> = {};
@@ -90,7 +99,8 @@ export async function GET() {
     // Se estiver na produção mas o Redis falhar, tenta ler o total da CounterAPI
     if (isProd) {
       try {
-        const res = await fetch('https://api.counterapi.dev/v1/mauriciobimbu/visits', {
+        const counterKeyDev = targetPage === '/academico' ? 'mauriciobimbu_academic' : 'mauriciobimbu';
+        const res = await fetch(`https://api.counterapi.dev/v1/${counterKeyDev}/visits`, {
           next: { revalidate: 0 }
         });
         if (res.ok) {
@@ -101,29 +111,47 @@ export async function GET() {
     }
 
     if (total === 0) {
-      const totalRow = db.prepare("SELECT value FROM settings WHERE key = 'visit_count'").get() as { value: string } | undefined;
+      const countKey = targetPage === '/academico' ? 'visit_count_academic' : 'visit_count';
+      const totalRow = db.prepare("SELECT value FROM settings WHERE key = ?").get(countKey) as { value: string } | undefined;
       total = parseInt(totalRow?.value || '0', 10);
+    }
+
+    // Filtros de SQL baseado na página alvo
+    let sqlFilter = "";
+    let sqlParams: any[] = [];
+    if (targetPage !== 'all') {
+      if (targetPage === '/') {
+        sqlFilter = "WHERE page = '/' OR page IS NULL OR page = ''";
+      } else {
+        sqlFilter = "WHERE page = ?";
+        sqlParams.push(targetPage);
+      }
     }
 
     const byCountry = db.prepare(`
       SELECT country, COUNT(*) as count FROM visits
+      ${sqlFilter}
       GROUP BY country ORDER BY count DESC LIMIT 10
-    `).all() as { country: string; count: number }[];
+    `).all(...sqlParams) as { country: string; count: number }[];
 
     const byDevice = db.prepare(`
       SELECT device, COUNT(*) as count FROM visits
+      ${sqlFilter}
       GROUP BY device ORDER BY count DESC
-    `).all() as { device: string; count: number }[];
+    `).all(...sqlParams) as { device: string; count: number }[];
 
     const byBrowser = db.prepare(`
       SELECT browser, COUNT(*) as count FROM visits
+      ${sqlFilter}
       GROUP BY browser ORDER BY count DESC
-    `).all() as { browser: string; count: number }[];
+    `).all(...sqlParams) as { browser: string; count: number }[];
 
     const recent = db.prepare(`
-      SELECT id, country, city, device, browser, referrer, visited_at
-      FROM visits ORDER BY id DESC LIMIT 20
-    `).all();
+      SELECT id, country, city, device, browser, referrer, page, visited_at
+      FROM visits
+      ${sqlFilter}
+      ORDER BY id DESC LIMIT 20
+    `).all(...sqlParams);
 
     return NextResponse.json({ total, byCountry, byDevice, byBrowser, recent });
   } catch (error) {

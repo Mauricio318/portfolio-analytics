@@ -2,13 +2,18 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  FileText, 
+  FileJson, 
   Cpu, 
-  Database as DbIcon, 
-  BarChart2, 
+  Database, 
+  Award, 
   Play, 
   CheckCircle, 
-  RefreshCw 
+  RefreshCw,
+  ShieldCheck,
+  Zap,
+  ChevronDown,
+  ChevronUp,
+  Activity
 } from 'lucide-react';
 import styles from './EtlSimulator.module.css';
 import { Language, translations } from '@/lib/translations';
@@ -17,16 +22,26 @@ interface EtlSimulatorProps {
   lang: Language;
 }
 
-type Step = 'idle' | 'extracting' | 'transforming' | 'loading' | 'analyzing' | 'finished';
+type Step = 'idle' | 'bronze' | 'silver' | 'gold' | 'finished';
+type TabLayer = 'gold' | 'silver' | 'bronze';
 
 interface LogMessage {
   text: string;
-  type: 'info' | 'extract' | 'transform' | 'load' | 'success';
+  type: 'info' | 'bronze' | 'silver' | 'gold' | 'success';
   timestamp: string;
 }
 
 export default function EtlSimulator({ lang }: EtlSimulatorProps) {
   const [step, setStep] = useState<Step>('idle');
+  const [activeTab, setActiveTab] = useState<TabLayer>('gold');
+  const [showInspector, setShowInspector] = useState<boolean>(false);
+  
+  // Dynamic metrics state (starts at 0, moves during pipeline execution)
+  const [processedRows, setProcessedRows] = useState<number>(0);
+  const [dqScore, setDqScore] = useState<number>(0);
+  const [throughput, setThroughput] = useState<number>(0);
+  const [latency, setLatency] = useState<number>(0);
+
   const [logs, setLogs] = useState<LogMessage[]>([]);
   const consoleRef = useRef<HTMLDivElement>(null);
   const t = translations[lang];
@@ -37,6 +52,25 @@ export default function EtlSimulator({ lang }: EtlSimulatorProps) {
     }
   }, [logs]);
 
+  // Real-time counter effect for Processed Rows (increments in multiples of 10)
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (step !== 'idle' && step !== 'finished') {
+      timer = setInterval(() => {
+        setProcessedRows(prev => {
+          const increment = 240; // Step size divisible by 10 (24 * 10)
+          const next = prev + increment;
+          if (next >= 94280) {
+            clearInterval(timer);
+            return 94280;
+          }
+          return Math.floor(next / 10) * 10;
+        });
+      }, 15);
+    }
+    return () => clearInterval(timer);
+  }, [step]);
+
   const addLog = (text: string, type: LogMessage['type']) => {
     const now = new Date();
     const timeStr = now.toTimeString().split(' ')[0];
@@ -44,33 +78,101 @@ export default function EtlSimulator({ lang }: EtlSimulatorProps) {
   };
 
   const runPipeline = () => {
-    setStep('extracting');
+    setStep('bronze');
     setLogs([]);
-    
-    // Sequence of steps with logs
+    setProcessedRows(0);
+    setDqScore(0);
+    setThroughput(0);
+    setLatency(0);
+
     const timeline = [
-      // EXTRACT STAGE
-      { delay: 100, text: `${t.etlLogStart} ${new Date().toLocaleTimeString()}...`, type: 'info', stage: 'extracting' },
-      { delay: 800, text: 'EXTRACT: Reading local directory "old_version/pdf/cv/"...', type: 'extract', stage: 'extracting' },
-      { delay: 1500, text: 'EXTRACT: Found files: "Curriculo_Lattes.pdf", "Mauricio_Garcia_Bimbu.pdf"', type: 'extract', stage: 'extracting' },
-      { delay: 2200, text: 'EXTRACT: Invoking pdf2json parser for extraction...', type: 'extract', stage: 'extracting' },
-      { delay: 2800, text: 'EXTRACT: Extracted 24,800 characters of raw curriculum text.', type: 'extract', stage: 'extracting' },
-      
-      // TRANSFORM STAGE
-      { delay: 3500, text: 'TRANSFORM: Starting data preparation with Python...', type: 'transform', stage: 'transforming' },
-      { delay: 4200, text: 'TRANSFORM: Cleaning special characters and fixing unicode formats.', type: 'transform', stage: 'transforming' },
-      { delay: 4800, text: 'TRANSFORM: Mapping experiences to JSON structure: 5 jobs, 3 degrees, 6 certificates.', type: 'transform', stage: 'transforming' },
-      { delay: 5500, text: 'TRANSFORM: Executing local dbt models to structure data relationships...', type: 'transform', stage: 'transforming' },
-      
-      // LOAD STAGE
-      { delay: 6200, text: 'LOAD: Connecting to SQLite relational database (portfolio.db)...', type: 'load', stage: 'loading' },
-      { delay: 6800, text: 'LOAD: Executing transactional script "inject-cv-data.js"...', type: 'load', stage: 'loading' },
-      { delay: 7500, text: 'LOAD: Loaded 6 skills, 5 jobs, 6 courses into respective tables. Done.', type: 'load', stage: 'loading' },
-      
-      // ANALYZE STAGE
-      { delay: 8200, text: 'ANALYZE: Reindexing SQLite FTS5 search index...', type: 'info', stage: 'analyzing' },
-      { delay: 8800, text: 'ANALYZE: Generating capability monitoring aggregates for portfolio dashboard...', type: 'info', stage: 'analyzing' },
-      { delay: 9400, text: 'SUCCESS: Pipeline executed successfully! Status: 200 OK.', type: 'success', stage: 'finished' }
+      // BRONZE STAGE (EXTRAIR)
+      { 
+        delay: 100, 
+        text: `${t.etlLogStart} ${new Date().toLocaleTimeString()}...`, 
+        type: 'info', 
+        stage: 'bronze', 
+        rows: 15400, 
+        dq: 95.10, 
+        speed: 4.2, 
+        ms: 4 
+      },
+      { 
+        delay: 800, 
+        text: '[BRONZE] Ingesting raw JSON streaming payload from API Gateway...', 
+        type: 'bronze', 
+        stage: 'bronze', 
+        rows: 32000, 
+        dq: 97.40, 
+        speed: 6.8, 
+        ms: 7 
+      },
+      { 
+        delay: 1600, 
+        text: '[BRONZE] Ingested 94,280 raw JSON objects into Data Lake (gs://lakehouse/bronze/)', 
+        type: 'bronze', 
+        stage: 'bronze', 
+        rows: 64000, 
+        dq: 98.60, 
+        speed: 9.4, 
+        ms: 10 
+      },
+
+      // SILVER STAGE (TRANSFORMAR)
+      { 
+        delay: 2500, 
+        text: '[SILVER] Running dbt & PySpark: filtering nulls, schema validation & PII SHA-256 masking...', 
+        type: 'silver', 
+        stage: 'silver', 
+        rows: 88000, 
+        dq: 99.50, 
+        speed: 11.2, 
+        ms: 12 
+      },
+      { 
+        delay: 3400, 
+        text: '[SILVER] Conformed Parquet tables created at gs://lakehouse/silver/fact_events/', 
+        type: 'silver', 
+        stage: 'silver', 
+        rows: 94280, 
+        dq: 99.85, 
+        speed: 12.0, 
+        ms: 13 
+      },
+
+      // GOLD STAGE (CARREGAR)
+      { 
+        delay: 4300, 
+        text: '[GOLD] Loading BigQuery DW Star Schema (dim_customers, fact_events_hourly)...', 
+        type: 'gold', 
+        stage: 'gold', 
+        rows: 94280, 
+        dq: 99.98, 
+        speed: 12.5, 
+        ms: 14 
+      },
+      { 
+        delay: 5100, 
+        text: '[GOLD] Materialized DW Tables: 94,280 clean rows transformed | Latency = 14ms.', 
+        type: 'gold', 
+        stage: 'gold', 
+        rows: 94280, 
+        dq: 99.98, 
+        speed: 12.5, 
+        ms: 14 
+      },
+
+      // SUCCESS (VISUALIZAR)
+      { 
+        delay: 6000, 
+        text: '✅ [SUCCESS] Pipeline execution completed! 94,280 clean records loaded into DW.', 
+        type: 'success', 
+        stage: 'finished', 
+        rows: 94280, 
+        dq: 99.98, 
+        speed: 12.5, 
+        ms: 14 
+      }
     ];
 
     timeline.forEach(item => {
@@ -79,6 +181,10 @@ export default function EtlSimulator({ lang }: EtlSimulatorProps) {
         if (item.stage) {
           setStep(item.stage as Step);
         }
+        if (item.rows !== undefined) setProcessedRows(item.rows);
+        if (item.dq !== undefined) setDqScore(item.dq);
+        if (item.speed !== undefined) setThroughput(item.speed);
+        if (item.ms !== undefined) setLatency(item.ms);
       }, item.delay);
     });
   };
@@ -86,13 +192,20 @@ export default function EtlSimulator({ lang }: EtlSimulatorProps) {
   const getStatusText = () => {
     switch (step) {
       case 'idle': return t.etlStatusIdle;
-      case 'extracting': return t.etlStatusExtracting;
-      case 'transforming': return t.etlStatusTransforming;
-      case 'loading': return t.etlStatusLoading;
-      case 'analyzing': return 'Reindexando banco e gerando agregados...';
+      case 'bronze': return t.etlStatusExtracting;
+      case 'silver': return t.etlStatusTransforming;
+      case 'gold': return t.etlStatusLoading;
       case 'finished': return t.etlStatusFinished;
     }
   };
+
+  const bronzeJsonSample = `{
+  "event_id": "evt_98410294812",
+  "timestamp": "2026-07-19T22:00:15Z",
+  "customer_email": "m.bimbu.eng@domain.com",
+  "payload_bytes": 4500,
+  "status": "PROCESSED"
+}`;
 
   return (
     <div className={styles.container}>
@@ -101,59 +214,129 @@ export default function EtlSimulator({ lang }: EtlSimulatorProps) {
         <p className={styles.subtitle}>{t.etlSubtitle}</p>
       </div>
 
-      {/* Visual DAG Graph */}
+      {/* Visual Medallion Architecture DAG */}
       <div className={styles.dagContainer}>
-        {/* Node 1: Extract */}
-        <div className={`${styles.node} ${step === 'extracting' ? styles.nodeActive : ''} ${(step !== 'idle' && step !== 'extracting') ? styles.nodeSuccess : ''}`}>
-          <div className={styles.nodeIcon}>
-            <FileText size={24} />
+        {/* Node 1: JSON */}
+        <div className={styles.node}>
+          <div 
+            className={styles.nodeIcon}
+            style={{
+              color: step === 'bronze' ? '#d97706' : (step !== 'idle' ? '#d97706' : 'var(--text-muted)'),
+              borderColor: step === 'bronze' ? '#d97706' : (step !== 'idle' ? '#d97706' : 'var(--border)'),
+              boxShadow: step === 'bronze' ? '0 0 18px rgba(217, 119, 6, 0.6)' : (step !== 'idle' ? '0 0 10px rgba(217, 119, 6, 0.3)' : 'none'),
+              background: step !== 'idle' ? 'rgba(217, 119, 6, 0.15)' : 'var(--bg-secondary)',
+              transform: step === 'bronze' ? 'scale(1.1)' : 'scale(1)',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <FileJson size={22} />
           </div>
-          <span className={styles.nodeLabel}>
-            {lang === 'pt' ? 'Extrair (Lattes)' : 'Extract (Lattes)'}
+          <span style={{ marginTop: '0.6rem', fontSize: '0.85rem', fontWeight: 800, color: step !== 'idle' ? '#d97706' : 'var(--text-main)' }}>
+            JSON
+          </span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-main)', fontWeight: 700, marginTop: '0.15rem' }}>
+            Extrair
           </span>
         </div>
 
         {/* Connector 1 */}
-        <div className={`${styles.connector} ${step !== 'idle' ? styles.connectorActive : ''}`} />
+        <div 
+          className={styles.connector}
+          style={{
+            background: step !== 'idle' ? 'linear-gradient(90deg, #d97706, #475569)' : 'var(--border)',
+            height: '3px'
+          }} 
+        />
 
-        {/* Node 2: Transform */}
-        <div className={`${styles.node} ${step === 'transforming' ? styles.nodeActive : ''} ${(['loading', 'analyzing', 'finished'].includes(step)) ? styles.nodeSuccess : ''}`}>
-          <div className={styles.nodeIcon}>
-            <Cpu size={24} />
+        {/* Node 2: dbt / Spark */}
+        <div className={styles.node}>
+          <div 
+            className={styles.nodeIcon}
+            style={{
+              color: step === 'silver' ? '#334155' : (['silver', 'gold', 'finished'].includes(step) ? '#475569' : 'var(--text-muted)'),
+              borderColor: step === 'silver' ? '#334155' : (['silver', 'gold', 'finished'].includes(step) ? '#475569' : 'var(--border)'),
+              boxShadow: step === 'silver' ? '0 0 18px rgba(71, 85, 105, 0.7)' : (['silver', 'gold', 'finished'].includes(step) ? '0 0 10px rgba(71, 85, 105, 0.3)' : 'none'),
+              background: ['silver', 'gold', 'finished'].includes(step) ? 'rgba(71, 85, 105, 0.15)' : 'var(--bg-secondary)',
+              transform: step === 'silver' ? 'scale(1.1)' : 'scale(1)',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <Cpu size={22} />
           </div>
-          <span className={styles.nodeLabel}>
-            {lang === 'pt' ? 'Transformar (dbt)' : 'Transform (dbt)'}
+          <span style={{ marginTop: '0.6rem', fontSize: '0.85rem', fontWeight: 800, color: ['silver', 'gold', 'finished'].includes(step) ? '#334155' : 'var(--text-main)' }}>
+            dbt / Spark
+          </span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-main)', fontWeight: 700, marginTop: '0.15rem' }}>
+            Transformar
           </span>
         </div>
 
         {/* Connector 2 */}
-        <div className={`${styles.connector} ${['transforming', 'loading', 'analyzing', 'finished'].includes(step) ? styles.connectorActive : ''}`} />
+        <div 
+          className={styles.connector}
+          style={{
+            background: ['silver', 'gold', 'finished'].includes(step) ? 'linear-gradient(90deg, #475569, #ca8a04)' : 'var(--border)',
+            height: '3px'
+          }} 
+        />
 
-        {/* Node 3: Load */}
-        <div className={`${styles.node} ${step === 'loading' ? styles.nodeActive : ''} ${(['analyzing', 'finished'].includes(step)) ? styles.nodeSuccess : ''}`}>
-          <div className={styles.nodeIcon}>
-            <DbIcon size={24} />
+        {/* Node 3: Data Lake */}
+        <div className={styles.node}>
+          <div 
+            className={styles.nodeIcon}
+            style={{
+              color: step === 'gold' ? '#ca8a04' : (['gold', 'finished'].includes(step) ? '#ca8a04' : 'var(--text-muted)'),
+              borderColor: step === 'gold' ? '#ca8a04' : (['gold', 'finished'].includes(step) ? '#ca8a04' : 'var(--border)'),
+              boxShadow: step === 'gold' ? '0 0 18px rgba(202, 138, 4, 0.7)' : (['gold', 'finished'].includes(step) ? '0 0 10px rgba(202, 138, 4, 0.3)' : 'none'),
+              background: ['gold', 'finished'].includes(step) ? 'rgba(202, 138, 4, 0.15)' : 'var(--bg-secondary)',
+              transform: step === 'gold' ? 'scale(1.1)' : 'scale(1)',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <Database size={22} />
           </div>
-          <span className={styles.nodeLabel}>
-            {lang === 'pt' ? 'Carregar (SQLite)' : 'Load (SQLite)'}
+          <span style={{ marginTop: '0.6rem', fontSize: '0.85rem', fontWeight: 800, color: ['gold', 'finished'].includes(step) ? '#ca8a04' : 'var(--text-main)' }}>
+            Data Lake
+          </span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-main)', fontWeight: 700, marginTop: '0.15rem' }}>
+            Carregar
           </span>
         </div>
 
         {/* Connector 3 */}
-        <div className={`${styles.connector} ${['loading', 'analyzing', 'finished'].includes(step) ? styles.connectorActive : ''}`} />
+        <div 
+          className={styles.connector}
+          style={{
+            background: step === 'finished' ? 'linear-gradient(90deg, #ca8a04, #059669)' : 'var(--border)',
+            height: '3px'
+          }} 
+        />
 
-        {/* Node 4: Analyze */}
-        <div className={`${styles.node} ${step === 'analyzing' ? styles.nodeActive : ''} ${step === 'finished' ? styles.nodeSuccess : ''}`}>
-          <div className={styles.nodeIcon}>
-            <BarChart2 size={24} />
+        {/* Node 4: DW */}
+        <div className={styles.node}>
+          <div 
+            className={styles.nodeIcon}
+            style={{
+              color: step === 'finished' ? '#059669' : 'var(--text-muted)',
+              borderColor: step === 'finished' ? '#059669' : 'var(--border)',
+              boxShadow: step === 'finished' ? '0 0 18px rgba(5, 150, 105, 0.7)' : 'none',
+              background: step === 'finished' ? 'rgba(5, 150, 105, 0.15)' : 'var(--bg-secondary)',
+              transform: step === 'finished' ? 'scale(1.1)' : 'scale(1)',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <Award size={22} />
           </div>
-          <span className={styles.nodeLabel}>
-            {lang === 'pt' ? 'Visualizar (Metrics)' : 'Visualize (Metrics)'}
+          <span style={{ marginTop: '0.6rem', fontSize: '0.85rem', fontWeight: 800, color: step === 'finished' ? '#059669' : 'var(--text-main)' }}>
+            DW
+          </span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-main)', fontWeight: 700, marginTop: '0.15rem' }}>
+            Visualizar
           </span>
         </div>
       </div>
 
-      {/* Button controls */}
+      {/* Controls Area */}
       <div className={styles.controlArea}>
         <button 
           onClick={runPipeline} 
@@ -177,19 +360,132 @@ export default function EtlSimulator({ lang }: EtlSimulatorProps) {
           )}
         </button>
 
-        <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 500 }}>
-          Status: <span style={{ color: step === 'finished' ? '#10b981' : 'var(--accent)' }}>{getStatusText()}</span>
+        <div style={{ color: 'var(--text-main)', fontSize: '0.85rem', fontWeight: 600 }}>
+          Status: <span style={{ color: step === 'finished' ? '#059669' : 'var(--accent)' }}>{getStatusText()}</span>
         </div>
       </div>
 
+      {/* Dynamic Animated Data Engineering Metrics Cards */}
+      <div style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+        <div style={{ background: 'var(--bg-secondary)', border: '1px solid #d97706', borderRadius: '10px', padding: '1rem', boxShadow: 'var(--card-shadow)' }}>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 700 }}>
+            <Activity size={15} color="#d97706" /> {t.etlMetricRows}
+          </div>
+          <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#d97706', marginTop: '0.3rem' }}>
+            {processedRows > 0 ? `${processedRows.toLocaleString(lang === 'pt' ? 'pt-BR' : 'en-US')} ${t.etlUnitRows}` : `0 ${t.etlUnitRows}`}
+          </div>
+        </div>
+
+        <div style={{ background: 'var(--bg-secondary)', border: '1px solid #059669', borderRadius: '10px', padding: '1rem', boxShadow: 'var(--card-shadow)' }}>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 700 }}>
+            <ShieldCheck size={15} color="#059669" /> {t.etlMetricQuality}
+          </div>
+          <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#059669', marginTop: '0.3rem' }}>
+            {dqScore > 0 ? `${dqScore.toFixed(2)}% ${t.etlUnitNoNulls}` : `0.00%`}
+          </div>
+        </div>
+
+        <div style={{ background: 'var(--bg-secondary)', border: '1px solid #0284c7', borderRadius: '10px', padding: '1rem', boxShadow: 'var(--card-shadow)' }}>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 700 }}>
+            <Zap size={15} color="#0284c7" /> {t.etlMetricThroughput}
+          </div>
+          <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0284c7', marginTop: '0.3rem' }}>
+            {throughput > 0 ? `${throughput.toFixed(1)} MB/s (~45k/s)` : '0.0 MB/s'}
+          </div>
+        </div>
+
+        <div style={{ background: 'var(--bg-secondary)', border: '1px solid #7e22ce', borderRadius: '10px', padding: '1rem', boxShadow: 'var(--card-shadow)' }}>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 700 }}>
+            <Zap size={15} color="#7e22ce" /> {t.etlMetricLatency}
+          </div>
+          <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#7e22ce', marginTop: '0.3rem' }}>
+            {latency > 0 ? `${latency} ms` : '0 ms'}
+          </div>
+        </div>
+      </div>
+
+      {/* Optional Compact Data Inspector Toggle */}
+      <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+        <button
+          type="button"
+          onClick={() => setShowInspector(!showInspector)}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'var(--accent)',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.3rem'
+          }}
+        >
+          {showInspector ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          {showInspector ? 'Ocultar Inspetor de Payloads (Bronze / Silver)' : 'Ver Amostra de Payloads (Bronze / Silver)'}
+        </button>
+      </div>
+
+      {showInspector && (
+        <div style={{ marginTop: '1rem', background: '#090d16', border: '1px solid #334155', borderRadius: '8px', padding: '1.25rem', boxShadow: '0 4px 20px rgba(0,0,0,0.4)' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
+            <button
+              type="button"
+              onClick={() => setActiveTab('bronze')}
+              style={{
+                padding: '0.4rem 0.85rem',
+                borderRadius: '6px',
+                border: '1px solid ' + (activeTab === 'bronze' ? '#f59e0b' : '#334155'),
+                background: activeTab === 'bronze' ? 'rgba(245, 158, 11, 0.2)' : '#0f172a',
+                color: activeTab === 'bronze' ? '#f59e0b' : '#94a3b8',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: 'pointer'
+              }}
+            >
+              🥉 Bronze JSON
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('silver')}
+              style={{
+                padding: '0.4rem 0.85rem',
+                borderRadius: '6px',
+                border: '1px solid ' + (activeTab === 'silver' ? '#38bdf8' : '#334155'),
+                background: activeTab === 'silver' ? 'rgba(56, 189, 248, 0.2)' : '#0f172a',
+                color: activeTab === 'silver' ? '#38bdf8' : '#94a3b8',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: 'pointer'
+              }}
+            >
+              🥈 Silver Table
+            </button>
+          </div>
+
+          {activeTab === 'bronze' ? (
+            <pre style={{ margin: 0, color: '#f59e0b', fontSize: '0.8rem', fontFamily: 'monospace', maxHeight: '140px', overflowY: 'auto', lineHeight: 1.6 }}>
+              {bronzeJsonSample}
+            </pre>
+          ) : (
+            <div style={{ fontSize: '0.82rem', fontFamily: 'monospace', lineHeight: 1.7, color: '#f8fafc' }}>
+              <div style={{ color: '#38bdf8', fontWeight: 800, marginBottom: '0.25rem' }}>[Schema Delta/Parquet]</div>
+              <div><span style={{ color: '#10b981', fontWeight: 700 }}>• event_id:</span> STRING <span style={{ color: '#64748b' }}>|</span> <span style={{ color: '#10b981', fontWeight: 700 }}>status:</span> PROCESSED</div>
+              <div><span style={{ color: '#10b981', fontWeight: 700 }}>• customer_hash:</span> <span style={{ color: '#c084fc' }}>sha256("m.bimbu***")</span> 🔒</div>
+              <div><span style={{ color: '#10b981', fontWeight: 700 }}>• timestamp_utc:</span> <span style={{ color: '#fbbf24' }}>2026-07-19T22:00:15Z</span></div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Live Log Console */}
       {(logs.length > 0 || step !== 'idle') && (
-        <div className={styles.console} ref={consoleRef}>
+        <div className={styles.console} ref={consoleRef} style={{ marginTop: '1.5rem', height: '140px' }}>
           {logs.map((log, index) => {
             let typeClass = styles.logInfo;
-            if (log.type === 'extract') typeClass = styles.logExtract;
-            if (log.type === 'transform') typeClass = styles.logTransform;
-            if (log.type === 'load') typeClass = styles.logLoad;
+            if (log.type === 'bronze') typeClass = styles.logExtract;
+            if (log.type === 'silver') typeClass = styles.logTransform;
+            if (log.type === 'gold') typeClass = styles.logLoad;
             if (log.type === 'success') typeClass = styles.logSuccess;
 
             return (
@@ -199,24 +495,6 @@ export default function EtlSimulator({ lang }: EtlSimulatorProps) {
               </div>
             );
           })}
-        </div>
-      )}
-
-      {/* Simulation dashboard widgets unlocked on success */}
-      {step === 'finished' && (
-        <div className={styles.metricsGrid}>
-          <div className={styles.metricCard}>
-            <div className={styles.metricLabel}>{t.etlMetricVolume}</div>
-            <div className={styles.metricValue}>24.8 KB</div>
-          </div>
-          <div className={styles.metricCard}>
-            <div className={styles.metricLabel}>{t.etlMetricSpeed}</div>
-            <div className={styles.metricValue}>496 KB/s</div>
-          </div>
-          <div className={styles.metricCard}>
-            <div className={styles.metricLabel}>{t.etlMetricError}</div>
-            <div className={styles.metricValue} style={{ color: '#10b981' }}>0.00%</div>
-          </div>
         </div>
       )}
     </div>

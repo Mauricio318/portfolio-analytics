@@ -25,3 +25,16 @@ export const getDb = (readonly = false) => {
   }
   return db;
 };
+
+export async function deleteUploadedFile(filePath?: string | null) {
+  if (!filePath || typeof filePath !== 'string' || !filePath.startsWith('/uploads/')) return;
+  try {
+    const fullPath = path.join(process.cwd(), 'public', filePath);
+    if (fs.existsSync(fullPath)) {
+      fs.unlinkSync(fullPath);
+      console.log(`✓ Arquivo fisicamente removido do disco: ${fullPath}`);
+    }
+  } catch (err) {
+    console.error(`Erro ao deletar arquivo do disco (${filePath}):`, err);
+  }
+}
