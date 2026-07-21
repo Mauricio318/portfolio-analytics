@@ -17,18 +17,18 @@ export default async function Home() {
 
   try {
     const settingsRows = await dbQuery<{ key: string; value: string }>('SELECT key, value FROM settings');
-    settings = settingsRows.reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {} as any);
+    settings = JSON.parse(JSON.stringify(settingsRows.reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {} as any)));
   } catch (e) {}
 
   try {
-    services = await dbQuery('SELECT * FROM services WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id ASC');
-    skills = await dbQuery('SELECT * FROM skills WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id ASC');
-    jobs = await dbQuery('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC', ['job']);
-    academic = await dbQuery('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC', ['academic']);
-    certifications = await dbQuery('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC', ['certification']);
-    courses = await dbQuery('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC', ['course']);
-    portfolio = await dbQuery('SELECT * FROM portfolio_items WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id DESC');
-    articles = await dbQuery('SELECT * FROM articles WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id DESC');
+    services = JSON.parse(JSON.stringify(await dbQuery('SELECT * FROM services WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id ASC')));
+    skills = JSON.parse(JSON.stringify(await dbQuery('SELECT * FROM skills WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id ASC')));
+    jobs = JSON.parse(JSON.stringify(await dbQuery('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC', ['job'])));
+    academic = JSON.parse(JSON.stringify(await dbQuery('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC', ['academic'])));
+    certifications = JSON.parse(JSON.stringify(await dbQuery('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC', ['certification'])));
+    courses = JSON.parse(JSON.stringify(await dbQuery('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC', ['course'])));
+    portfolio = JSON.parse(JSON.stringify(await dbQuery('SELECT * FROM portfolio_items WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id DESC')));
+    articles = JSON.parse(JSON.stringify(await dbQuery('SELECT * FROM articles WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id DESC')));
   } catch (e) {}
 
   return (
