@@ -364,9 +364,18 @@ export default function AdminServicosPage() {
               onChange={e => setLimitServices(e.target.value)}
               style={{ ...inputStyle, maxWidth: '320px', fontWeight: 600 }}
             >
+              <option value="1">1 serviço inicial</option>
+              <option value="2">2 serviços iniciais</option>
               <option value="3">3 serviços iniciais</option>
+              <option value="4">4 serviços iniciais</option>
+              <option value="5">5 serviços iniciais</option>
               <option value="6">6 serviços iniciais (Padrão)</option>
+              <option value="7">7 serviços iniciais</option>
+              <option value="8">8 serviços iniciais</option>
               <option value="9">9 serviços iniciais</option>
+              <option value="10">10 serviços iniciais</option>
+              <option value="12">12 serviços iniciais</option>
+              <option value="15">15 serviços iniciais</option>
               <option value="999">Exibir Todos (Sem botão ver mais)</option>
             </select>
           </div>
