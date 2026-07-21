@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { dbQuery, dbExecute } from '@/lib/query';
 import { decrypt } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import { sanitizeInput } from '@/lib/security';
@@ -12,8 +12,7 @@ async function checkAuth() {
 
 export async function GET() {
   try {
-    const db = getDb(true);
-    const rows = db.prepare('SELECT key, value FROM settings').all() as { key: string, value: string }[];
+    const rows = await dbQuery<{ key: string; value: string }>('SELECT key, value FROM settings');
     const settings = rows.reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {});
     return NextResponse.json(settings);
   } catch (error) {
@@ -29,9 +28,10 @@ export async function POST(request: Request) {
     const sanitizedKey = sanitizeInput(key);
     const sanitizedValue = sanitizeInput(value);
     
-    const db = getDb();
-    const stmt = db.prepare('INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value');
-    stmt.run(sanitizedKey, sanitizedValue);
+    await dbExecute(
+      'INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value',
+      [sanitizedKey, sanitizedValue]
+    );
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Erro ao salvar' }, { status: 500 });
