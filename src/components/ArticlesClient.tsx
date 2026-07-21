@@ -153,10 +153,12 @@ export default function ArticlesClient({ initialSettings, initialArticles }: Art
         backdropFilter: 'blur(10px)', 
         background: 'var(--bg-secondary)', 
         borderBottom: '1px solid var(--border)',
-        padding: '0.75rem 1.5rem',
+        padding: '0.75rem 1rem',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '0.5rem',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.02)'
       }}>
         <a href="/" style={{ 
