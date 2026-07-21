@@ -35,9 +35,10 @@ export default function SkillsAdmin() {
   const saveTextSettings = async () => {
     setSavingSettings(true);
     try {
+      const headers = { 'Content-Type': 'application/json' };
       await Promise.all([
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'skills_subtitle', value: skillsSubtitle }) }),
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'limit_skills', value: limitSkills }) })
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'skills_subtitle', value: skillsSubtitle }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'limit_skills', value: limitSkills }) })
       ]);
       setMsg('Configurações salvas com sucesso!');
       setTimeout(() => setMsg(''), 4000);

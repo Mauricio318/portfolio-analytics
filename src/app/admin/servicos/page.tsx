@@ -110,29 +110,29 @@ export default function AdminServicosPage() {
   const saveSettings = async () => {
     try {
       setSaving(true);
-
+      const headers = { 'Content-Type': 'application/json' };
       const promises = [
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'services_subtitle', value: servicesSubtitle }) }),
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'services_description', value: servicesDescription }) }),
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'limit_services', value: limitServices }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'services_subtitle', value: servicesSubtitle }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'services_description', value: servicesDescription }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'limit_services', value: limitServices }) }),
 
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'stat_projects_completed', value: stats.completedNum }) }),
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'stat_label_completed', value: stats.completedLabel }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'stat_projects_completed', value: stats.completedNum }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'stat_label_completed', value: stats.completedLabel }) }),
 
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'stat_projects_ongoing', value: stats.ongoingNum }) }),
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'stat_label_ongoing', value: stats.ongoingLabel }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'stat_projects_ongoing', value: stats.ongoingNum }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'stat_label_ongoing', value: stats.ongoingLabel }) }),
 
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'stat_research_ongoing', value: stats.researchNum }) }),
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'stat_label_research', value: stats.researchLabel }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'stat_research_ongoing', value: stats.researchNum }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'stat_label_research', value: stats.researchLabel }) }),
 
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'stat_ideas_count', value: stats.ideasNum }) }),
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'stat_label_ideas', value: stats.ideasLabel }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'stat_ideas_count', value: stats.ideasNum }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'stat_label_ideas', value: stats.ideasLabel }) }),
 
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'stat_coffee_count', value: stats.coffeeNum }) }),
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'stat_label_coffee', value: stats.coffeeLabel }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'stat_coffee_count', value: stats.coffeeNum }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'stat_label_coffee', value: stats.coffeeLabel }) }),
 
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'stat_hours_count', value: stats.hoursNum }) }),
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'stat_label_hours', value: stats.hoursLabel }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'stat_hours_count', value: stats.hoursNum }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'stat_label_hours', value: stats.hoursLabel }) }),
       ];
 
       await Promise.all(promises);

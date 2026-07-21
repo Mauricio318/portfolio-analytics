@@ -74,34 +74,14 @@ export default function ResumeAdmin() {
   const handleProfileSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      await fetch('/api/settings', {
-        method: 'POST',
-        body: JSON.stringify({ key: 'name', value: profile.name })
-      });
-      await fetch('/api/settings', {
-        method: 'POST',
-        body: JSON.stringify({ key: 'roles', value: profile.roles })
-      });
-      await fetch('/api/settings', {
-        method: 'POST',
-        body: JSON.stringify({ key: 'bio', value: profile.bio })
-      });
-      await fetch('/api/settings', {
-        method: 'POST',
-        body: JSON.stringify({ key: 'profile_concept_text', value: profile.conceptText })
-      });
-      await fetch('/api/settings', {
-        method: 'POST',
-        body: JSON.stringify({ key: 'email', value: profile.email })
-      });
-      await fetch('/api/settings', {
-        method: 'POST',
-        body: JSON.stringify({ key: 'contact_email', value: profile.email })
-      });
-      await fetch('/api/settings', {
-        method: 'POST',
-        body: JSON.stringify({ key: 'linkedin', value: profile.linkedin })
-      });
+      const headers = { 'Content-Type': 'application/json' };
+      await fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'name', value: profile.name }) });
+      await fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'roles', value: profile.roles }) });
+      await fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'bio', value: profile.bio }) });
+      await fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'profile_concept_text', value: profile.conceptText }) });
+      await fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'email', value: profile.email }) });
+      await fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'contact_email', value: profile.email }) });
+      await fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'linkedin', value: profile.linkedin }) });
       alert('Perfil e contatos atualizados com sucesso!');
     } catch (err) {
       console.error(err);
@@ -202,11 +182,16 @@ export default function ResumeAdmin() {
     if (editingId) {
       await fetch('/api/resume', {
         method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: editingId, ...form })
       });
       setEditingId(null);
     } else {
-      await fetch('/api/resume', { method: 'POST', body: JSON.stringify(form) });
+      await fetch('/api/resume', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      });
     }
     
     setForm(prev => ({ 
@@ -449,12 +434,13 @@ export default function ResumeAdmin() {
         <button 
           type="button" 
           onClick={async () => {
+            const headers = { 'Content-Type': 'application/json' };
             await Promise.all([
-              fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'visible_jobs_count', value: visibleJobsCount }) }),
-              fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'visible_academic_count', value: visibleAcademicCount }) }),
-              fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'limit_certifications', value: limitCertifications }) }),
-              fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'limit_courses', value: limitCourses }) }),
-              fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'experience_subtitle', value: experienceSubtitle }) })
+              fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'visible_jobs_count', value: visibleJobsCount }) }),
+              fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'visible_academic_count', value: visibleAcademicCount }) }),
+              fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'limit_certifications', value: limitCertifications }) }),
+              fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'limit_courses', value: limitCourses }) }),
+              fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'experience_subtitle', value: experienceSubtitle }) })
             ]);
             alert('Configurações de exibição e textos salvas com sucesso!');
           }}
@@ -597,17 +583,18 @@ export default function ResumeAdmin() {
           onClick={async () => {
             setSavingSocials(true);
             try {
+              const headers = { 'Content-Type': 'application/json' };
               await Promise.all([
-                fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'github_url', value: socials.github }) }),
-                fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'linkedin_url', value: socials.linkedin }) }),
-                fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'linkedin', value: socials.linkedin }) }),
-                fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'kaggle_url', value: socials.kaggle }) }),
-                fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'medium_url', value: socials.medium }) }),
-                fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'orcid_url', value: socials.orcid }) }),
-                fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'lattes_url', value: socials.lattes }) }),
-                fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'whatsapp_url', value: socials.whatsapp }) }),
-                fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'email', value: socials.email }) }),
-                fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'contact_email', value: socials.email }) })
+                fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'github_url', value: socials.github }) }),
+                fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'linkedin_url', value: socials.linkedin }) }),
+                fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'linkedin', value: socials.linkedin }) }),
+                fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'kaggle_url', value: socials.kaggle }) }),
+                fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'medium_url', value: socials.medium }) }),
+                fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'orcid_url', value: socials.orcid }) }),
+                fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'lattes_url', value: socials.lattes }) }),
+                fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'whatsapp_url', value: socials.whatsapp }) }),
+                fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'email', value: socials.email }) }),
+                fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'contact_email', value: socials.email }) })
               ]);
               alert('Links de Redes Sociais salvos com sucesso!');
             } catch (err) {

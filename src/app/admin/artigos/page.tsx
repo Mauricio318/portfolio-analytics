@@ -97,9 +97,10 @@ export default function AdminArticlesPage() {
   const saveHeaderSettings = async () => {
     setSavingSettings(true);
     try {
+      const headers = { 'Content-Type': 'application/json' };
       await Promise.all([
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'articles_subtitle', value: articlesSubtitle }) }),
-        fetch('/api/settings', { method: 'POST', body: JSON.stringify({ key: 'limit_articles', value: limitArticles }) })
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'articles_subtitle', value: articlesSubtitle }) }),
+        fetch('/api/settings', { method: 'POST', headers, body: JSON.stringify({ key: 'limit_articles', value: limitArticles }) })
       ]);
       setMsg('Configurações salvas!');
       setTimeout(() => setMsg(''), 4000);
