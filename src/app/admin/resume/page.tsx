@@ -210,15 +210,24 @@ export default function ResumeAdmin() {
 
   const handleEditClick = (item: any) => {
     setEditingId(item.id);
+
+    let startDate = item.start_date || '';
+    let endDate = item.end_date || '';
+    if (!startDate && item.period) {
+      const parts = item.period.split(' - ');
+      startDate = parts[0] || '';
+      endDate = parts[1] || '';
+    }
+
     setForm({
       type: item.type,
       title: item.title,
-      institution: item.institution,
-      start_date: item.start_date || '',
-      end_date: item.end_date || '',
+      institution: item.institution || item.company || '',
+      start_date: startDate,
+      end_date: endDate,
       description: item.description || '',
       technologies: item.technologies || '',
-      image_url: item.image_url || '',
+      image_url: item.image_url || item.certificate_url || '',
       link: item.link || ''
     });
   };
