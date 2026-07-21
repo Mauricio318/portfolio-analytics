@@ -13,6 +13,7 @@ import {
   GraduationCap,
   Eye,
   X,
+  Menu,
   BarChart2,
   Search,
   Cpu,
@@ -120,6 +121,7 @@ export default function PortfolioClient({
   const [showAllSkills, setShowAllSkills] = useState<boolean>(false);
   const [showAllServices, setShowAllServices] = useState<boolean>(false);
   const [showAllArticles, setShowAllArticles] = useState<boolean>(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const t = translations[lang];
 
   const toggleJob = (id: number) => {
@@ -277,7 +279,7 @@ export default function PortfolioClient({
       {/* Dynamic Translated Navigation Header */}
       <header className={styles.navbar}>
         <div className={styles.navContainer}>
-          <a href="#inicio" className={styles.logo}>MB. <span style={{ fontSize: '0.65rem', opacity: 0.6 }}>v1</span></a>
+          <a href="#inicio" className={styles.logo}>MB.</a>
           <div className={styles.navLinks}>
             <a href="#inicio" className={activeSection === 'inicio' ? styles.activeNavLink : ''}>{t.navHome}</a>
             <a href="#portfolio" className={activeSection === 'portfolio' ? styles.activeNavLink : ''}>{t.navPortfolio}</a>
@@ -301,8 +303,32 @@ export default function PortfolioClient({
             </button>
             <ThemeToggle />
             <a href="/admin" className={styles.adminLink}>Admin</a>
+            
+            {/* Botão Hambúrguer Mobile */}
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+              className={styles.mobileMenuToggle}
+              aria-label="Menu"
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </div>
         </div>
+
+        {/* Menu Suspenso Mobile */}
+        {mobileMenuOpen && (
+          <div className={styles.mobileNavDropdown}>
+            <a href="#inicio" onClick={() => setMobileMenuOpen(false)} className={activeSection === 'inicio' ? styles.activeNavLink : ''}>{t.navHome}</a>
+            <a href="#portfolio" onClick={() => setMobileMenuOpen(false)} className={activeSection === 'portfolio' ? styles.activeNavLink : ''}>{t.navPortfolio}</a>
+            <a href="#etl" onClick={() => setMobileMenuOpen(false)} className={activeSection === 'etl' ? styles.activeNavLink : ''}>{lang === 'pt' ? 'Simulador' : 'Simulator'}</a>
+            <a href="#experiencia" onClick={() => setMobileMenuOpen(false)} className={activeSection === 'experiencia' ? styles.activeNavLink : ''}>{t.navExperience}</a>
+            <a href="#certifications" onClick={() => setMobileMenuOpen(false)} className={activeSection === 'certifications' ? styles.activeNavLink : ''}>{lang === 'pt' ? 'Certificações' : 'Certifications'}</a>
+            <a href="#cursos" onClick={() => setMobileMenuOpen(false)} className={activeSection === 'cursos' ? styles.activeNavLink : ''}>{lang === 'pt' ? 'Cursos' : 'Courses'}</a>
+            <a href="#skills" onClick={() => setMobileMenuOpen(false)} className={activeSection === 'skills' ? styles.activeNavLink : ''}>{t.navSkills}</a>
+            <a href="#servicos" onClick={() => setMobileMenuOpen(false)} className={activeSection === 'servicos' ? styles.activeNavLink : ''}>{t.navServices}</a>
+            <a href="#contato" onClick={() => setMobileMenuOpen(false)} className={activeSection === 'contato' ? styles.activeNavLink : ''}>{t.navContact}</a>
+          </div>
+        )}
       </header>
 
       {/* HERO SECTION */}
