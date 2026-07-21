@@ -1,6 +1,6 @@
 # 📊 Portfólio & Plataforma de Analytics - Mauricio Garcia Bimbu
 
-Plataforma Web full-stack moderna e interativa desenvolvida com **Next.js 14 (App Router)**, **TypeScript**, **SQLite** e **CSS Modules**. O sistema é projetado para apresentar cases de **Engenharia de Dados, Ciência de Dados, Big Data e Machine Learning**, contando com um **Painel Administrativo completo**, visualizador de **Currículo Lattes Acadêmico**, pré-visualizador de **código-fonte e notebooks**, **blog/artigos técnicos** e métricas em tempo real.
+Plataforma Web full-stack moderna e interativa desenvolvida com **Next.js 14 (App Router)**, **TypeScript**, **Turso Cloud DB (libSQL / Serverless DB)**, **SQLite (Fallback Local)** e **CSS Modules**. O sistema é projetado para apresentar cases de **Engenharia de Dados, Ciência de Dados, Big Data e Machine Learning**, contando com um **Painel Administrativo completo**, visualizador de **Currículo Lattes Acadêmico**, pré-visualizador de **código-fonte e notebooks**, **blog/artigos técnicos** e métricas em tempo real.
 
 ---
 
@@ -8,7 +8,9 @@ Plataforma Web full-stack moderna e interativa desenvolvida com **Next.js 14 (Ap
 
 - **Framework Frontend/Backend**: Next.js 14 (App Router)
 - **Linguagem**: TypeScript (Type-safe)
-- **Banco de Dados**: SQLite com driver `better-sqlite3` (migrações e auto-seeding embutidos)
+- **Banco de Dados Cloud / Produção**: Turso Cloud DB (Serverless SQLite / `@libsql/client`)
+- **Banco de Dados Local / Fallback**: SQLite com driver `better-sqlite3` (`portfolio.db`)
+- **Arquitetura Híbrida de Queries**: Encapsulamento customizado em `src/lib/query.ts` para direcionar consultas transparentemente para a Nuvem ou para o arquivo `.db` local.
 - **Estilização**: CSS Modules (com variáveis de design tokens em `globals.css`) e Lucide Icons
 - **Internacionalização**: Suporte nativo a **Português (PT)** e **Inglês (EN)**
 - **Tema**: Alternador dinâmico de **Modo Claro (Light)** e **Modo Escuro (Dark)**
@@ -30,10 +32,12 @@ Plataforma Web full-stack moderna e interativa desenvolvida com **Next.js 14 (Ap
 
 3. **🎓 Currículo Lattes Acadêmico (/academico)**:
    - Apresentação estruturada das seções acadêmicas (Formação, Artigos Publicados, Participação em Eventos, Projetos de Pesquisa, Bancas).
+   - Suporte a edição direta do **Resumo do Perfil / Sobre Mim** sem trava de idioma em inglês obrigatório.
    - Gerenciamento dinâmico pelo Admin com adição, edição e reorganização de itens.
 
 4. **💼 Seção de Trajetória, Serviços & Métricas**:
    - Timeline de experiência profissional com expansão de detalhes de projetos e tecnologias utilizadas.
+   - Preenchimento e edição automática de datas de início, fim e empresas/instituições.
    - Cartões de Serviços oferecidos acompanhados de métricas de impacto de negócios.
 
 5. **🔐 Painel Administrativo Protegido (/admin)**:
@@ -44,8 +48,9 @@ Plataforma Web full-stack moderna e interativa desenvolvida com **Next.js 14 (Ap
    - Reordenação dinâmica (`▲ Subir` / `▼ Descer`) de itens em todas as seções.
    - Gerenciador centralizado de redes sociais e links úteis (GitHub, LinkedIn, Kaggle, Medium, ORCID, Lattes, WhatsApp).
 
-6. **📊 Analytics & Métricas de Acesso**:
-   - Contador de visualizações de páginas e rastreamento de acessos únicos armazenados no banco de dados.
+6. **☁️ Sincronização Serverless Turso DB + Vercel**:
+   - Dados 100% persistidos na nuvem no **Turso Cloud DB**.
+   - Atualização instantânea em tempo real sem atraso de cache estático (`export const dynamic = 'force-dynamic'`).
 
 ---
 
@@ -56,7 +61,8 @@ O projeto segue a arquitetura **Next.js App Router**, combinando rotas de API Se
 ```
 projeto/
 ├── public/                    # Ativos estáticos (favicon.ico, icon.png, uploads)
-├── scripts/                   # Scripts utilitários de banco e carga inicial
+├── scripts/                   # Scripts utilitários e migração Turso DB
+│   └── sync-turso.js          # Sincronizador de schema e dados para Turso Cloud DB
 ├── src/
 │   ├── app/                   # App Router (Páginas, Layouts e APIs)
 │   │   ├── academico/         # Página pública do Lattes Acadêmico
@@ -69,7 +75,7 @@ projeto/
 │   │   │   ├── servicos/      # Gestão de Serviços & Métricas
 │   │   │   ├── skills/        # Gestão de Habilidades
 │   │   │   └── stats/         # Painel de Estatísticas
-│   │   ├── api/               # API Routes RESTful (CRUD SQLite)
+│   │   ├── api/               # API Routes RESTful (CRUD Turso / SQLite)
 │   │   │   ├── academico/
 │   │   │   ├── articles/
 │   │   │   ├── auth/
@@ -93,7 +99,10 @@ projeto/
 │   │   ├── ThemeProvider.tsx
 │   │   └── ThemeToggle.tsx
 │   └── lib/                   # Utilitários de infraestrutura
-│       ├── db.ts              # Conexão SQLite, Migrations e Auto-seeding
+│       ├── auth.ts            # Criptografia JWT/JOSE e gestão de cookies
+│       ├── db.ts              # Conexão SQLite local, fallback e upload
+│       ├── query.ts           # Wrapper Híbrido Turso Cloud DB / SQLite
+│       ├── turso.ts           # Cliente LibSQL singleton para Turso DB
 │       └── translations.ts    # Dicionário de tradução PT/EN
 ├── portfolio.db               # Arquivo SQLite local de dados
 ├── next.config.mjs            # Configuração do Next.js
@@ -104,7 +113,7 @@ projeto/
 
 ## 🗄️ Modelo de Dados & Relacionamento de Tabelas (ERD)
 
-Abaixo está o **Diagrama de Entidade-Relacionamento (ERD)** do banco de dados SQLite (`portfolio.db`):
+Abaixo está o **Diagrama de Entidade-Relacionamento (ERD)** atualizado do banco de dados (`portfolio.db` / **Turso Cloud DB**):
 
 ```mermaid
 erDiagram
@@ -122,20 +131,23 @@ erDiagram
         INTEGER is_featured
         INTEGER is_visible
         INTEGER sort_order
+        DATETIME created_at
     }
 
     resume_items {
         INTEGER id PK
-        TEXT type "experience | education | certification | course"
+        TEXT type "job | academic | certification | course"
         TEXT title
-        TEXT company
-        TEXT period
+        TEXT institution
+        TEXT start_date
+        TEXT end_date
         TEXT description
-        TEXT highlights
         TEXT technologies
-        TEXT certificate_url
-        INTEGER is_visible
+        TEXT image_url
+        TEXT link
         INTEGER sort_order
+        INTEGER is_visible
+        DATETIME created_at
     }
 
     services {
@@ -161,22 +173,30 @@ erDiagram
 
     academic_sections {
         INTEGER id PK
-        TEXT title
-        TEXT icon
+        TEXT title_pt
+        TEXT title_en
+        TEXT type "text | list"
+        TEXT position
         INTEGER sort_order
-        INTEGER is_visible
+        TEXT content_pt
+        TEXT content_en
+        TEXT tags
+        INTEGER show_limit
     }
 
     academic_section_items {
         INTEGER id PK
         INTEGER section_id FK
-        TEXT title
-        TEXT subtitle
+        TEXT title_pt
+        TEXT title_en
+        TEXT subtitle_pt
+        TEXT subtitle_en
+        TEXT description_pt
+        TEXT description_en
         TEXT period
-        TEXT details
-        TEXT institution
+        TEXT link
+        TEXT tags
         INTEGER sort_order
-        INTEGER is_visible
     }
 
     articles {
@@ -193,7 +213,7 @@ erDiagram
         INTEGER is_featured
         INTEGER is_visible
         INTEGER sort_order
-        TEXT card_size
+        TEXT card_size "normal | large | full"
         DATETIME created_at
     }
 
@@ -203,7 +223,7 @@ erDiagram
         TEXT value
     }
 
-    analytics {
+    visits {
         INTEGER id PK
         TEXT page
         TEXT visited_at
@@ -216,8 +236,8 @@ erDiagram
 
 ### 🔗 Descrição das Conexões:
 - **`academic_sections` ── (1:N) ── `academic_section_items`**: Cada seção do Lattes Acadêmico (ex: *Formação*, *Projetos de Pesquisa*) possui zero ou múltiplos itens cadastrados vinculados pela chave estrangeira `section_id`.
-- **`settings`**: Tabela de chave-valor (`key`, `value`) utilizada para armazenar parâmetros globais do site, como textos conceituais, links externos das redes sociais no rodapé/contato, subtítulo do blog e limite de exibição por página.
-- **`analytics`**: Registra cada acesso do visitante armazenando a página, data/hora e metadados de acesso.
+- **`settings`**: Tabela de chave-valor (`key`, `value`) utilizada para armazenar parâmetros globais do site, como textos conceituais, links externos das redes sociais no rodapé/contato, subtítulo do blog, limite de exibição por página e PDF do currículo.
+- **`visits`**: Registra os acessos dos visitantes armazenando a página consultada, data/hora e metadados de acesso.
 
 ---
 
@@ -240,12 +260,26 @@ erDiagram
    npm install
    ```
 
-3. **Iniciar o Servidor de Desenvolvimento**:
+3. **Configurar Variáveis de Ambiente (`.env.local`)**:
+   Crie um arquivo `.env.local` na raiz do projeto:
+   ```env
+   TURSO_DATABASE_URL="libsql://portfolio-db-mauricio318.aws-us-east-1.turso.io"
+   TURSO_AUTH_TOKEN="seu_token_turso_aqui"
+   ADMIN_PASSWORD="sua_senha_admin_aqui"
+   JWT_SECRET="seu_jwt_secret_seguro"
+   ```
+
+4. **Sincronizar Banco de Dados com o Turso Cloud (Opcional)**:
+   ```bash
+   node scripts/sync-turso.js
+   ```
+
+5. **Iniciar o Servidor de Desenvolvimento**:
    ```bash
    npm run dev
    ```
 
-4. **Acessar no Navegador**:
+6. **Acessar no Navegador**:
    - Site Principal: `http://localhost:3000`
    - Lattes Acadêmico: `http://localhost:3000/academico`
    - Blog / Artigos: `http://localhost:3000/artigos`
@@ -253,13 +287,13 @@ erDiagram
 
 ---
 
-## 🔒 Segurança & Painel Administrativo
+## 🔒 Segurança & Deploy na Vercel
 
 O sistema conta com um Painel Administrativo privado para gestão e atualização em tempo real do conteúdo:
 
-- **Autenticação Segura**: Acesso restrito via autenticação de senha de administrador configurada por variáveis de ambiente de produção.
-- **Gerenciamento de Sessão**: Utiliza cookies seguros com atributos de proteção (`HttpOnly` e `SameSite=Strict`), garantindo que apenas sessões autenticadas possam acessar os módulos de gerenciamento.
-- **Proteção de Rotas**: As rotas administrativas e APIs de gravação/edição são protegidas no lado do servidor por middlewares de autorização.
+- **Autenticação Segura**: Acesso restrito via autenticação de senha de administrador configurada por variáveis de ambiente de produção (`ADMIN_PASSWORD`).
+- **Gerenciamento de Sessão**: Utiliza cookies seguros com atributos de proteção (`HttpOnly` e `SameSite=Lax`), garantindo que apenas sessões autenticadas possam acessar os módulos de gerenciamento.
+- **Vercel Integration**: Variáveis `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN` registradas na Vercel para sincronização direta na nuvem sem necessidade de banco estático local.
 
 ---
 
