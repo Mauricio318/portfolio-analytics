@@ -236,10 +236,18 @@ export default function PortfolioAdmin() {
             onChange={e => setLimitPortfolio(e.target.value)}
             style={{ width: '100%', maxWidth: '300px', padding: '0.6rem 0.8rem', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)', fontSize: '0.9rem' }}
           >
+            <option value="1">1 projeto</option>
+            <option value="2">2 projetos</option>
             <option value="3">3 projetos (Padrão)</option>
+            <option value="4">4 projetos</option>
+            <option value="5">5 projetos</option>
             <option value="6">6 projetos</option>
+            <option value="7">7 projetos</option>
+            <option value="8">8 projetos</option>
             <option value="9">9 projetos</option>
+            <option value="10">10 projetos</option>
             <option value="12">12 projetos</option>
+            <option value="15">15 projetos</option>
             <option value="999">Exibir Todos (Sem botão ver mais)</option>
           </select>
         </div>

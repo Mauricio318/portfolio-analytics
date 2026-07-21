@@ -372,6 +372,11 @@ export default function ResumeAdmin() {
               <option value="3">3 itens iniciais</option>
               <option value="4">4 itens iniciais</option>
               <option value="5">5 itens iniciais</option>
+              <option value="6">6 itens iniciais</option>
+              <option value="7">7 itens iniciais</option>
+              <option value="8">8 itens iniciais</option>
+              <option value="9">9 itens iniciais</option>
+              <option value="10">10 itens iniciais</option>
               <option value="999">Exibir Todos (Sem botão ver mais)</option>
             </select>
           </div>
@@ -391,6 +396,11 @@ export default function ResumeAdmin() {
               <option value="3">3 itens iniciais</option>
               <option value="4">4 itens iniciais</option>
               <option value="5">5 itens iniciais</option>
+              <option value="6">6 itens iniciais</option>
+              <option value="7">7 itens iniciais</option>
+              <option value="8">8 itens iniciais</option>
+              <option value="9">9 itens iniciais</option>
+              <option value="10">10 itens iniciais</option>
               <option value="999">Exibir Todas</option>
             </select>
           </div>
@@ -404,9 +414,17 @@ export default function ResumeAdmin() {
               onChange={e => setLimitCertifications(e.target.value)}
               style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)', fontSize: '0.9rem' }}
             >
+              <option value="1">1 certificação</option>
+              <option value="2">2 certificações</option>
               <option value="3">3 certificações (Padrão)</option>
+              <option value="4">4 certificações</option>
+              <option value="5">5 certificações</option>
               <option value="6">6 certificações</option>
+              <option value="7">7 certificações</option>
+              <option value="8">8 certificações</option>
               <option value="9">9 certificações</option>
+              <option value="10">10 certificações</option>
+              <option value="12">12 certificações</option>
               <option value="999">Exibir Todas (Sem botão ver mais)</option>
             </select>
           </div>
@@ -420,9 +438,17 @@ export default function ResumeAdmin() {
               onChange={e => setLimitCourses(e.target.value)}
               style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-main)', color: 'var(--text-main)', fontSize: '0.9rem' }}
             >
+              <option value="1">1 curso</option>
+              <option value="2">2 cursos</option>
               <option value="3">3 cursos (Padrão)</option>
+              <option value="4">4 cursos</option>
+              <option value="5">5 cursos</option>
               <option value="6">6 cursos</option>
+              <option value="7">7 cursos</option>
+              <option value="8">8 cursos</option>
               <option value="9">9 cursos</option>
+              <option value="10">10 cursos</option>
+              <option value="12">12 cursos</option>
               <option value="999">Exibir Todos (Sem botão ver mais)</option>
             </select>
           </div>
