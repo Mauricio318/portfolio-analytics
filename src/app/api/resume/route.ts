@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 
     let query = admin 
       ? 'SELECT * FROM resume_items'
-      : 'SELECT * FROM resume_items WHERE is_visible = 1';
+      : 'SELECT * FROM resume_items WHERE is_visible = 1 OR is_visible IS NULL';
 
     const params: any[] = [];
     if (type) {
@@ -23,13 +23,13 @@ export async function GET(request: Request) {
 
     const items = await dbQuery(query, params);
     
-    // Normaliza campos para compatibilidade com o front-end
+    // Sincroniza e garante que start_date e end_date venham preenchidos
     const mapped = items.map((item: any) => ({
       ...item,
-      institution: item.company || item.institution || '',
-      start_date: item.period ? item.period.split(' - ')[0] : '',
-      end_date: item.period ? item.period.split(' - ')[1] || '' : '',
-      image_url: item.certificate_url || item.image_url || ''
+      institution: item.institution || item.company || '',
+      start_date: item.start_date || '',
+      end_date: item.end_date || '',
+      image_url: item.image_url || item.certificate_url || ''
     }));
 
     return NextResponse.json(mapped);
@@ -64,49 +64,55 @@ async function handleSave(request: Request) {
       return NextResponse.json({ success: true });
     }
 
-    const company = body.company || body.institution || '';
-    let period = body.period || '';
-    if (!period && body.start_date) {
-      period = body.end_date ? `${body.start_date} - ${body.end_date}` : `${body.start_date} - Atual`;
-    }
-    const certUrl = body.certificate_url || body.image_url || body.link || '';
+    const title = body.title || '';
+    const institution = body.institution || body.company || '';
+    const startDate = body.start_date || '';
+    const endDate = body.end_date || '';
+    const description = body.description || '';
+    const technologies = body.technologies || '';
+    const imageUrl = body.image_url || body.certificate_url || '';
+    const link = body.link || '';
+    const type = body.type || 'job';
+    const isVisible = body.is_visible !== undefined ? (body.is_visible ? 1 : 0) : 1;
 
     if (body.id) {
       await dbExecute(`
         UPDATE resume_items 
-        SET type = ?, title = ?, company = ?, period = ?, description = ?, highlights = ?, technologies = ?, certificate_url = ?, is_visible = ?
+        SET type = ?, title = ?, institution = ?, start_date = ?, end_date = ?, description = ?, technologies = ?, image_url = ?, link = ?, is_visible = ?
         WHERE id = ?
       `, [
-        body.type || 'job',
-        body.title || '',
-        company,
-        period,
-        body.description || '',
-        body.highlights || '',
-        body.technologies || '',
-        certUrl,
-        body.is_visible !== undefined ? (body.is_visible ? 1 : 0) : 1,
+        type,
+        title,
+        institution,
+        startDate,
+        endDate,
+        description,
+        technologies,
+        imageUrl,
+        link,
+        isVisible,
         body.id
       ]);
 
       return NextResponse.json({ success: true, id: body.id });
     } else {
-      const maxOrderResult: any = await dbQueryOne('SELECT MAX(sort_order) as maxOrder FROM resume_items WHERE type = ?', [body.type || 'job']);
+      const maxOrderResult: any = await dbQueryOne('SELECT MAX(sort_order) as maxOrder FROM resume_items WHERE type = ?', [type]);
       const nextOrder = (maxOrderResult?.maxOrder || 0) + 1;
 
       const result = await dbExecute(`
-        INSERT INTO resume_items (type, title, company, period, description, highlights, technologies, certificate_url, is_visible, sort_order)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO resume_items (type, title, institution, start_date, end_date, description, technologies, image_url, link, is_visible, sort_order)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `, [
-        body.type || 'job',
-        body.title || '',
-        company,
-        period,
-        body.description || '',
-        body.highlights || '',
-        body.technologies || '',
-        certUrl,
-        body.is_visible !== undefined ? (body.is_visible ? 1 : 0) : 1,
+        type,
+        title,
+        institution,
+        startDate,
+        endDate,
+        description,
+        technologies,
+        imageUrl,
+        link,
+        isVisible,
         nextOrder
       ]);
 
