@@ -641,7 +641,7 @@ export default function PortfolioClient({
       {/* TIMELINE SECTION (Experiencias e Formacao) */}
       <section id="experiencia" className={`container ${styles.section}`} style={{ borderTop: '1px solid var(--border)' }}>
         <h2 className="section-title">{t.sectionTrajectoryTitle}</h2>
-        <p className={styles.sectionSubtitle} style={{ marginTop: '-0.75rem', marginBottom: '2rem' }}>
+        <p className={styles.sectionSubtitle}>
           {translateDbString(initialSettings.experience_subtitle || 'Estes são os principais pontos de ganho de experiência e títulos que obtive durante minha jornada até hoje...', lang)}
         </p>
         <div className={styles.trajectoryGrid}>

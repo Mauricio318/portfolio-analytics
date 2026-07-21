@@ -119,13 +119,19 @@ a {
 
 @media (max-width: 768px) {
   .container {
-    padding: 0 1.75rem;
+    padding: 0 2rem;
+  }
+  .section-title {
+    margin-left: 0.5rem;
   }
 }
 
 @media (max-width: 480px) {
   .container {
-    padding: 0 1.75rem;
+    padding: 0 1.85rem;
+  }
+  .section-title {
+    margin-left: 0.5rem;
   }
 }
 
