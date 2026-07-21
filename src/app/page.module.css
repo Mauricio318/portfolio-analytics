@@ -540,14 +540,14 @@
   align-items: center;
   gap: 0.65rem;
   font-weight: 700;
-  padding-left: 0.5rem;
+  padding-left: 1.25rem;
 }
 
 .timeline {
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  padding-left: 1.25rem;
+  padding-left: 1.75rem;
 }
 
 .timelineItem {
