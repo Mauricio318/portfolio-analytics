@@ -185,8 +185,12 @@ export default function AdminAcademicClient() {
       });
       if (res.ok) {
         alert('Configurações de perfil científico salvas com sucesso!');
+      } else if (res.status === 401) {
+        alert('Sua sessão de administrador expirou. Por favor, faça login novamente no painel admin.');
+        window.location.href = '/admin/login';
       } else {
-        alert('Erro ao salvar configurações.');
+        const errorData = await res.json().catch(() => ({}));
+        alert(errorData.error || 'Erro ao salvar configurações.');
       }
     } catch (err) {
       console.error(err);

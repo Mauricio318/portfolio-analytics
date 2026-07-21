@@ -19,25 +19,55 @@ export const getDb = (readonly = false) => {
     }
   }
 
-  // Always ensure migrations have run by opening a write handle if needed
+  // Se estiver em hospedagem Serverless / Vercel ou sistema de arquivos Read-Only
+  const isServerless = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+  if (isServerless) {
+    const tmpPath = path.join('/tmp', 'portfolio.db');
+    if (!fs.existsSync(tmpPath) && fs.existsSync(dbPath)) {
+      try {
+        fs.copyFileSync(dbPath, tmpPath);
+      } catch (e) {
+        console.error('Erro ao copiar banco para /tmp:', e);
+      }
+    }
+    if (fs.existsSync(tmpPath)) {
+      dbPath = tmpPath;
+    }
+  }
+
+  // Tenta abrir conexao e rodar migrações
   try {
     const writeDb = new Database(dbPath, { readonly: false });
-    if (!process.env.VERCEL) {
-      writeDb.pragma('journal_mode = delete');
+    if (!isServerless) {
+      try {
+        writeDb.pragma('journal_mode = delete');
+      } catch (e) {}
     }
     runMigrations(writeDb);
     writeDb.close();
   } catch (e) {
-    // Ignore if already open or locked
+    // Se falhar por o sistema ser Read-Only, usa fallback para /tmp
+    try {
+      const tmpPath = path.join('/tmp', 'portfolio.db');
+      if (!fs.existsSync(tmpPath) && fs.existsSync(dbPath)) {
+        fs.copyFileSync(dbPath, tmpPath);
+      }
+      dbPath = tmpPath;
+      const writeDb = new Database(dbPath, { readonly: false });
+      runMigrations(writeDb);
+      writeDb.close();
+    } catch (err) {
+      console.error('Erro ao abrir banco com permissao de escrita:', err);
+    }
   }
 
-  const db = new Database(dbPath, { readonly });
+  const db = new Database(dbPath, { readonly: readonly && !isServerless });
   return db;
 };
 
 function runMigrations(db: Database.Database) {
   try {
-    // 1. Create articles table
+    // 1. Tabela de artigos
     db.exec(`
       CREATE TABLE IF NOT EXISTS articles (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,7 +93,7 @@ function runMigrations(db: Database.Database) {
           db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type};`);
         }
       } catch (e) {
-        // Table might not exist yet
+        // Tabela pode nao existir ainda
       }
     };
 
@@ -77,7 +107,7 @@ function runMigrations(db: Database.Database) {
     addColumnIfMissing('articles', 'category', 'TEXT DEFAULT "Engenharia & Arquitetura de Dados"');
     addColumnIfMissing('articles', 'card_size', 'TEXT DEFAULT "normal"');
 
-    // Auto-seed articles table if empty so Admin displays them immediately
+    // Auto-seed artigos se vazio
     try {
       const countRes = db.prepare('SELECT COUNT(*) as count FROM articles').get() as { count: number };
       if (countRes && countRes.count === 0) {
