@@ -625,7 +625,6 @@ export default function AdminAcademicClient() {
               type="text"
               value={profileSettings.academic_name}
               onChange={e => setProfileSettings({ ...profileSettings, academic_name: e.target.value })}
-              required
               style={inputStyle}
             />
           </div>
@@ -635,7 +634,6 @@ export default function AdminAcademicClient() {
               type="text"
               value={profileSettings.academic_location}
               onChange={e => setProfileSettings({ ...profileSettings, academic_location: e.target.value })}
-              required
               style={inputStyle}
             />
           </div>
@@ -645,7 +643,6 @@ export default function AdminAcademicClient() {
               type="text"
               value={profileSettings.academic_institution}
               onChange={e => setProfileSettings({ ...profileSettings, academic_institution: e.target.value })}
-              required
               style={inputStyle}
             />
           </div>
@@ -658,17 +655,15 @@ export default function AdminAcademicClient() {
               type="text"
               value={profileSettings.academic_role_pt}
               onChange={e => setProfileSettings({ ...profileSettings, academic_role_pt: e.target.value })}
-              required
               style={inputStyle}
             />
           </div>
           <div>
-            <label style={labelStyle}>Cargo Acadêmico (Inglês):</label>
+            <label style={labelStyle}>Cargo Acadêmico (Inglês - Opcional):</label>
             <input 
               type="text"
               value={profileSettings.academic_role_en}
               onChange={e => setProfileSettings({ ...profileSettings, academic_role_en: e.target.value })}
-              required
               style={inputStyle}
             />
           </div>
@@ -681,7 +676,6 @@ export default function AdminAcademicClient() {
               type="text"
               value={profileSettings.academic_lattes_id}
               onChange={e => setProfileSettings({ ...profileSettings, academic_lattes_id: e.target.value })}
-              required
               style={inputStyle}
             />
           </div>
@@ -691,7 +685,6 @@ export default function AdminAcademicClient() {
               type="url"
               value={profileSettings.academic_lattes_url}
               onChange={e => setProfileSettings({ ...profileSettings, academic_lattes_url: e.target.value })}
-              required
               style={inputStyle}
             />
           </div>
@@ -879,21 +872,20 @@ export default function AdminAcademicClient() {
         {sectionForm.type === 'text' && (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '1.5rem' }}>
             <div>
-              <label style={labelStyle}>Texto (Português):</label>
+              <label style={labelStyle}>Texto do Resumo / Sobre Mim (Português):</label>
               <textarea 
                 value={sectionForm.content_pt}
                 onChange={e => setSectionForm({ ...sectionForm, content_pt: e.target.value })}
                 required
-                style={{ ...inputStyle, minHeight: '120px', resize: 'vertical' }}
+                style={{ ...inputStyle, minHeight: '140px', resize: 'vertical' }}
               />
             </div>
             <div>
-              <label style={labelStyle}>Texto (Inglês):</label>
+              <label style={labelStyle}>Texto do Resumo / Sobre Mim (Inglês - Opcional):</label>
               <textarea 
                 value={sectionForm.content_en}
                 onChange={e => setSectionForm({ ...sectionForm, content_en: e.target.value })}
-                required
-                style={{ ...inputStyle, minHeight: '120px', resize: 'vertical' }}
+                style={{ ...inputStyle, minHeight: '140px', resize: 'vertical' }}
               />
             </div>
           </div>
