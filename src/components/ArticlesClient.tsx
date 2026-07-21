@@ -153,7 +153,7 @@ export default function ArticlesClient({ initialSettings, initialArticles }: Art
         backdropFilter: 'blur(10px)', 
         background: 'var(--bg-secondary)', 
         borderBottom: '1px solid var(--border)',
-        padding: '0.75rem 1rem',
+        padding: '0.85rem 1.35rem',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -219,14 +219,14 @@ export default function ArticlesClient({ initialSettings, initialArticles }: Art
         </div>
       </header>
 
-      <main style={{ maxWidth: '1150px', margin: '0 auto', padding: '2.5rem 1.5rem' }}>
+      <main style={{ maxWidth: '1150px', margin: '0 auto', padding: '1.5rem 1.35rem' }}>
         
         {/* Banner Hero */}
         <section style={{ 
           background: 'var(--bg-secondary)', 
           border: '1px solid var(--border)', 
           borderRadius: '16px', 
-          padding: '2.5rem 2rem', 
+          padding: '1.75rem 1.35rem', 
           marginBottom: '2.5rem',
           position: 'relative',
           overflow: 'hidden',
