@@ -22,6 +22,14 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  return handleSave(request);
+}
+
+export async function PUT(request: Request) {
+  return handleSave(request);
+}
+
+async function handleSave(request: Request) {
   try {
     const body = await request.json();
 

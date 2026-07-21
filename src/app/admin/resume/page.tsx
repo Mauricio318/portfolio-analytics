@@ -31,12 +31,12 @@ export default function ResumeAdmin() {
   const [savingSocials, setSavingSocials] = useState(false);
 
   const loadItems = async () => {
-    const res = await fetch('/api/resume?admin=true');
+    const res = await fetch('/api/resume?admin=true', { cache: 'no-store' });
     if (res.ok) setItems(await res.json());
   };
 
   const loadCvSetting = async () => {
-    const res = await fetch('/api/settings');
+    const res = await fetch('/api/settings', { cache: 'no-store' });
     if (res.ok) {
       const data = await res.json();
       setCvUrl(data.cv_url || '');
