@@ -1,30 +1,35 @@
-import { getDb } from '@/lib/db';
+import { dbQuery } from '@/lib/query';
 import PortfolioClient from '@/components/PortfolioClient';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
-export default function Home() {
-  const db = getDb(true);
-  
-  // Fetch Settings
-  const settingsRows = db.prepare('SELECT key, value FROM settings').all() as { key: string, value: string }[];
-  const settings = settingsRows.reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {} as any);
-  
-  // Fetch Services, Skills, CV, Portfolio and Articles (filtrando por is_visible)
-  const services = db.prepare('SELECT * FROM services WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id ASC').all() as any[];
-  const skills = db.prepare('SELECT * FROM skills WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, percentage DESC').all() as any[];
-  const jobs = db.prepare('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC').all('job') as any[];
-  const academic = db.prepare('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC').all('academic') as any[];
-  const certifications = db.prepare('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC').all('certification') as any[];
-  const courses = db.prepare('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC').all('course') as any[];
-  const portfolio = db.prepare('SELECT * FROM portfolio_items WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id DESC').all() as any[];
-  
+export default async function Home() {
+  let settings: any = {};
+  let services: any[] = [];
+  let skills: any[] = [];
+  let jobs: any[] = [];
+  let academic: any[] = [];
+  let certifications: any[] = [];
+  let courses: any[] = [];
+  let portfolio: any[] = [];
   let articles: any[] = [];
+
   try {
-    articles = db.prepare('SELECT * FROM articles WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id DESC').all() as any[];
-  } catch (e) {
-    articles = [];
-  }
+    const settingsRows = await dbQuery<{ key: string; value: string }>('SELECT key, value FROM settings');
+    settings = settingsRows.reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {} as any);
+  } catch (e) {}
+
+  try {
+    services = await dbQuery('SELECT * FROM services WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id ASC');
+    skills = await dbQuery('SELECT * FROM skills WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id ASC');
+    jobs = await dbQuery('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC', ['job']);
+    academic = await dbQuery('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC', ['academic']);
+    certifications = await dbQuery('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC', ['certification']);
+    courses = await dbQuery('SELECT * FROM resume_items WHERE type = ? AND (is_visible IS NULL OR is_visible = 1) ORDER BY sort_order ASC, id DESC', ['course']);
+    portfolio = await dbQuery('SELECT * FROM portfolio_items WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id DESC');
+    articles = await dbQuery('SELECT * FROM articles WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, id DESC');
+  } catch (e) {}
 
   return (
     <PortfolioClient 

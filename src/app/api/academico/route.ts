@@ -4,6 +4,9 @@ import { decrypt } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import { sanitizeObject } from '@/lib/security';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function checkAuth() {
   const session = cookies().get('session')?.value;
   if (!session) return false;

@@ -1,102 +1,88 @@
 import { NextResponse } from 'next/server';
-import { getDb, deleteUploadedFile } from '@/lib/db';
-import { decrypt } from '@/lib/auth';
-import { cookies } from 'next/headers';
-import { sanitizeObject } from '@/lib/security';
+import { dbQuery, dbQueryOne, dbExecute, dbTransaction } from '@/lib/query';
 
-async function checkAuth() {
-  const session = cookies().get('session')?.value;
-  if (!session) return false;
-  return await decrypt(session);
-}
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const admin = searchParams.get('admin') === 'true';
-    const db = getDb(true);
 
-    const query = admin
-      ? 'SELECT * FROM skills ORDER BY sort_order ASC, percentage DESC, id ASC'
-      : 'SELECT * FROM skills WHERE is_visible IS NULL OR is_visible = 1 ORDER BY sort_order ASC, percentage DESC, id ASC';
+    const query = admin 
+      ? 'SELECT * FROM skills ORDER BY sort_order ASC, level DESC'
+      : 'SELECT * FROM skills WHERE is_visible = 1 ORDER BY sort_order ASC, level DESC';
 
-    const items = db.prepare(query).all();
-    return NextResponse.json(items);
-  } catch (error) {
-    return NextResponse.json({ error: 'Erro ao buscar dados' }, { status: 500 });
+    const skills = await dbQuery(query);
+    return NextResponse.json(skills);
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
-  if (!await checkAuth()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-  
   try {
-    const rawBody = await request.json();
-    const body = sanitizeObject(rawBody);
+    const body = await request.json();
 
     if (body.action === 'reorder') {
-      const { order } = body;
-      const db = getDb();
-      const stmt = db.prepare('UPDATE skills SET sort_order = ? WHERE id = ?');
-      db.transaction(() => {
-        for (const item of order) {
-          stmt.run(item.sort_order, item.id);
-        }
-      })();
+      const statements = body.order.map((item: { id: number; sort_order: number }) => ({
+        sql: 'UPDATE skills SET sort_order = ? WHERE id = ?',
+        params: [item.sort_order, item.id]
+      }));
+      await dbTransaction(statements);
       return NextResponse.json({ success: true });
     }
 
     if (body.action === 'toggle_visibility') {
-      const db = getDb();
-      db.prepare('UPDATE skills SET is_visible = ? WHERE id = ?').run(body.is_visible ? 1 : 0, body.id);
+      await dbExecute('UPDATE skills SET is_visible = ? WHERE id = ?', [body.is_visible ? 1 : 0, body.id]);
       return NextResponse.json({ success: true });
     }
 
-    const { name, level, percentage, image_url, is_visible } = body;
-    const db = getDb();
-    const maxSort = db.prepare('SELECT MAX(sort_order) as max FROM skills').get() as { max: number };
-    const sort_order = (maxSort?.max || 0) + 1;
-    const stmt = db.prepare('INSERT INTO skills (name, level, percentage, image_url, is_visible, sort_order) VALUES (?, ?, ?, ?, ?, ?)');
-    const info = stmt.run(name, level, percentage, image_url || null, is_visible !== undefined ? (is_visible ? 1 : 0) : 1, sort_order);
-    return NextResponse.json({ id: info.lastInsertRowid, success: true });
-  } catch (error) {
-    return NextResponse.json({ error: 'Erro ao salvar' }, { status: 500 });
-  }
-}
+    if (body.id) {
+      await dbExecute(`
+        UPDATE skills 
+        SET name = ?, category = ?, level = ?, is_visible = ?
+        WHERE id = ?
+      `, [
+        body.name,
+        body.category || 'Engenharia de Dados',
+        body.level || 80,
+        body.is_visible !== undefined ? (body.is_visible ? 1 : 0) : 1,
+        body.id
+      ]);
 
-export async function PUT(request: Request) {
-  if (!await checkAuth()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-  
-  try {
-    const rawBody = await request.json();
-    const { id, name, level, percentage, image_url, is_visible } = sanitizeObject(rawBody);
-    const db = getDb();
-    const oldItem = db.prepare('SELECT image_url FROM skills WHERE id = ?').get(id) as any;
-    if (oldItem?.image_url && oldItem.image_url !== image_url) {
-      await deleteUploadedFile(oldItem.image_url);
+      return NextResponse.json({ success: true, id: body.id });
+    } else {
+      const maxOrderResult: any = await dbQueryOne('SELECT MAX(sort_order) as maxOrder FROM skills');
+      const nextOrder = (maxOrderResult?.maxOrder || 0) + 1;
+
+      const result = await dbExecute(`
+        INSERT INTO skills (name, category, level, is_visible, sort_order)
+        VALUES (?, ?, ?, ?, ?)
+      `, [
+        body.name,
+        body.category || 'Engenharia de Dados',
+        body.level || 80,
+        body.is_visible !== undefined ? (body.is_visible ? 1 : 0) : 1,
+        nextOrder
+      ]);
+
+      return NextResponse.json({ success: true, id: result.lastInsertRowid });
     }
-    const stmt = db.prepare('UPDATE skills SET name = ?, level = ?, percentage = ?, image_url = ?, is_visible = ? WHERE id = ?');
-    stmt.run(name, level, percentage, image_url || null, is_visible !== undefined ? (is_visible ? 1 : 0) : 1, id);
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    return NextResponse.json({ error: 'Erro ao salvar' }, { status: 500 });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
 
 export async function DELETE(request: Request) {
-  if (!await checkAuth()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-  
   try {
-    const url = new URL(request.url);
-    const id = url.searchParams.get('id');
-    const db = getDb();
-    const item = db.prepare('SELECT image_url FROM skills WHERE id = ?').get(id) as any;
-    if (item?.image_url) {
-      await deleteUploadedFile(item.image_url);
-    }
-    db.prepare('DELETE FROM skills WHERE id = ?').run(id);
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    if (!id) return NextResponse.json({ error: 'ID obrigatório' }, { status: 400 });
+
+    await dbExecute('DELETE FROM skills WHERE id = ?', [id]);
     return NextResponse.json({ success: true });
-  } catch (error) {
-    return NextResponse.json({ error: 'Erro ao deletar' }, { status: 500 });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

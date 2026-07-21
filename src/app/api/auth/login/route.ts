@@ -2,12 +2,15 @@ import { NextResponse } from 'next/server';
 import { encrypt } from '@/lib/auth';
 import { cookies } from 'next/headers';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function POST(request: Request) {
   try {
     const { password } = await request.json();
     
-    // Utiliza a variável de ambiente ADMIN_PASSWORD ou o fallback seguro 'admin123'
-    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    // Senha definida por variavel de ambiente ou fallback padrao solicitado bimbu2026
+    const adminPassword = process.env.ADMIN_PASSWORD || 'bimbu2026';
     
     if (password === adminPassword) {
       const sessionData = { role: 'admin' };
