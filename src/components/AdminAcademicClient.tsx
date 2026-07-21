@@ -124,7 +124,7 @@ export default function AdminAcademicClient() {
   // Carrega seções, configurações e estatísticas do servidor
   const loadData = async () => {
     try {
-      const res = await fetch('/api/academico');
+      const res = await fetch('/api/academico', { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setSections(data.sections || []);

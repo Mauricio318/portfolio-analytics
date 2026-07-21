@@ -26,45 +26,81 @@ export async function GET() {
 
     const settingsRows = await dbQuery<{ key: string; value: string }>("SELECT key, value FROM settings WHERE key LIKE 'academic_%'");
     const settings = settingsRows.reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {});
-    
+
     return NextResponse.json({
       sections: sectionsWithItems,
       settings
     });
-  } catch (error: any) {
-    console.error('Erro no GET de academico:', error);
-    return NextResponse.json({ error: 'Erro ao buscar dados acadêmicos' }, { status: 500 });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
 
-// POST: Realiza operações de mutação
+// POST: Operações de atualização/criação/exclusão (requer autenticação)
 export async function POST(request: Request) {
-  if (!await checkAuth()) {
-    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-  }
-
   try {
+    const isAuth = await checkAuth();
+    if (!isAuth) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
     const rawBody = await request.json();
     const body = sanitizeObject(rawBody);
     const { action } = body;
 
     switch (action) {
+      case 'update_settings': {
+        const { settings } = body;
+        if (!settings || typeof settings !== 'object') {
+          return NextResponse.json({ error: 'Configurações inválidas' }, { status: 400 });
+        }
+
+        const statements = Object.entries(settings).map(([key, value]) => ({
+          sql: `
+            INSERT INTO settings (key, value)
+            VALUES (?, ?)
+            ON CONFLICT(key) DO UPDATE SET value = excluded.value
+          `,
+          params: [key, String(value ?? '')]
+        }));
+
+        await dbTransaction(statements);
+        return NextResponse.json({ success: true });
+      }
+
       case 'create_section': {
         const { title_pt, title_en, type, position, sort_order, content_pt, content_en, tags, show_limit } = body;
         const res = await dbExecute(`
           INSERT INTO academic_sections (title_pt, title_en, type, position, sort_order, content_pt, content_en, tags, show_limit)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [title_pt, title_en, type, position, sort_order || 0, content_pt || null, content_en || null, tags || null, show_limit === undefined ? 3 : Number(show_limit)]);
+        `, [title_pt, title_en, type || 'list', position || 'center', sort_order || 0, content_pt || null, content_en || null, tags || null, show_limit === undefined ? 3 : Number(show_limit)]);
         return NextResponse.json({ id: res.lastInsertRowid, success: true });
       }
 
+      case 'update_section':
       case 'edit_section': {
-        const { id, title_pt, title_en, position, sort_order, content_pt, content_en, tags, show_limit } = body;
+        const { id, title_pt, title_en, position, sort_order, content_pt, content_en, tags, show_limit, type } = body;
+        
+        // Busca a seção atual para não sobrescrever o tipo caso venha nulo
+        const existingSections = await dbQuery('SELECT type, position, sort_order, show_limit FROM academic_sections WHERE id = ?', [id]);
+        const existing = existingSections[0] || {};
+
         await dbExecute(`
           UPDATE academic_sections
-          SET title_pt = ?, title_en = ?, position = ?, sort_order = ?, content_pt = ?, content_en = ?, tags = ?, show_limit = ?
+          SET title_pt = ?, title_en = ?, type = ?, position = ?, sort_order = ?, content_pt = ?, content_en = ?, tags = ?, show_limit = ?
           WHERE id = ?
-        `, [title_pt, title_en, position, sort_order || 0, content_pt || null, content_en || null, tags || null, show_limit === undefined ? 3 : Number(show_limit), id]);
+        `, [
+          title_pt,
+          title_en,
+          type || existing.type || 'list',
+          position || existing.position || 'center',
+          sort_order !== undefined ? Number(sort_order) : (existing.sort_order || 0),
+          content_pt || null,
+          content_en || null,
+          tags || null,
+          show_limit === undefined ? (existing.show_limit || 3) : Number(show_limit),
+          id
+        ]);
         return NextResponse.json({ success: true });
       }
 
@@ -84,6 +120,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ id: res.lastInsertRowid, success: true });
       }
 
+      case 'update_item':
       case 'edit_item': {
         const { id, title_pt, title_en, subtitle_pt, subtitle_en, description_pt, description_en, tags, link, period, sort_order } = body;
         await dbExecute(`
@@ -120,33 +157,10 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true });
       }
 
-      case 'update_settings': {
-        const { settings } = body;
-        const statements = Object.entries(settings).map(([key, value]) => ({
-          sql: 'INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value',
-          params: [key, value]
-        }));
-        await dbTransaction(statements);
-        return NextResponse.json({ success: true });
-      }
-
-      case 'toggle_section_visibility': {
-        const { id, is_visible } = body;
-        await dbExecute('UPDATE academic_sections SET is_visible = ? WHERE id = ?', [is_visible ? 1 : 0, id]);
-        return NextResponse.json({ success: true });
-      }
-
-      case 'toggle_item_visibility': {
-        const { id, is_visible } = body;
-        await dbExecute('UPDATE academic_section_items SET is_visible = ? WHERE id = ?', [is_visible ? 1 : 0, id]);
-        return NextResponse.json({ success: true });
-      }
-
       default:
         return NextResponse.json({ error: 'Ação inválida' }, { status: 400 });
     }
-  } catch (error: any) {
-    console.error('Erro ao salvar dados acadêmicos:', error);
-    return NextResponse.json({ error: 'Erro interno no servidor' }, { status: 500 });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
